@@ -1,5 +1,5 @@
 import express from "express";
-import compression from "compression";  // compresses requests
+import compression from "compression";
 import session from "express-session";
 import bodyParser from "body-parser";
 import logger from "./util/logger";
@@ -25,6 +25,7 @@ import * as userController from "./controllers/user";
 import * as apiController from "./controllers/api";
 import * as contactController from "./controllers/contact";
 import * as patientController from "./controllers/patient";
+import * as familyController from "./controllers/family";
 
 
 // API keys and Passport configuration
@@ -110,10 +111,15 @@ app.post("/account/password", passportConfig.isAuthenticated, userController.pos
 app.post("/account/delete", passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userController.getOauthUnlink);
 
-app.get("/patients", passportConfig.isAuthenticated, patientController.getPatients);
 app.post("/patients/create", passportConfig.isAuthenticated, patientController.postCreatePatient);
-app.get("/patients/:id/patient", passportConfig.isAuthenticated, patientController.getPatient);
 app.post("/patients/:id/update", passportConfig.isAuthenticated, patientController.postUpdatePatient);
+app.get("/patients/:id/patient", passportConfig.isAuthenticated, patientController.getPatient);
+app.get("/patients", passportConfig.isAuthenticated, patientController.getPatients);
+
+app.post("/families/create", passportConfig.isAuthenticated, familyController.postCreateFamily);
+app.post("/families/:id/update", passportConfig.isAuthenticated, familyController.postUpdateFamily);
+app.get("/families/:id/family", passportConfig.isAuthenticated, familyController.getFamily);
+app.get("/families/:patientId/list", passportConfig.isAuthenticated, familyController.getFamilies);
 /**
  * API examples routes.
  */

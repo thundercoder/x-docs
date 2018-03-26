@@ -47,6 +47,11 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
             req.flash("errors", info.message);
             return res.redirect("/login");
         }
+
+        if (!user.active) {
+            return res.status(403).send({ error: "Your account is not actived, please contact help support for further information." });
+        }
+
         req.logIn(user, (err) => {
             if (err) {
                 return next(err);

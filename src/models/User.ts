@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt-nodejs";
 import crypto from "crypto";
 import mongoose from "mongoose";
+import { patientSchema, Patient } from "./Patient";
 
 import { default as Specialist, SpecialistModel } from "../models/Specialist";
 
@@ -39,26 +40,6 @@ export type AuthToken = {
     accessToken: string,
     kind: string
 };
-
-export type Patient = {
-    firstName: string,
-    lastName: string,
-    bodyPerson: {
-        height: number,
-        weight: number,
-        color: string
-    }
-};
-
-const patientSchema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
-    bodyPerson: {
-        height: Number,
-        weight: Number,
-        color: String
-    }
-});
 
 const userSchema = new mongoose.Schema({
     email: {type: String, unique: true},

@@ -1,8 +1,7 @@
-import { default as User, UserModel, Patient } from "../models/User";
+import { default as User, UserModel } from "../models/User";
+import { Patient } from "../models/Patient";
 import { Request, Response, NextFunction } from "express";
 import { ValidationError } from "mongoose";
-
-const request = require("express-validator");
 
 /**
  * POST /patients/create
@@ -55,6 +54,8 @@ export let getPatient = (req: Request, res: Response, next: NextFunction) => {
     User.findOne({ "_id": req.user.id, "patients._id": req.params.id }, { "patients.$": 1 }, (err, user: UserModel) => {
        if (err) return next(err);
 
+       if (!user) return res.status(400).send({ error: "User not found." });
+
        return res.status(200).send(user.patients[0]);
     });
 };
@@ -90,7 +91,7 @@ export let postUpdatePatient = (req: Request, res: Response, next: NextFunction)
  * Return a list of patients created.
  */
 export let getPatients = (req: Request, res: Response, next: NextFunction) => {
-    User.findOne({ "_id": req.user.id }, (err, user: UserModel) => {
+    User.find({ "_id": req.user.id }, (err, user: UserModel) => {
         if (err) return next(err);
 
         return res.status(200).send(user.patients);
