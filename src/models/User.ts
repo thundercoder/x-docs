@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt-nodejs";
 import crypto from "crypto";
 import mongoose from "mongoose";
-import { patientSchema, Patient } from "./Patient";
+import { patientSchema, PatientModel } from "./Patient";
 
-import { default as Specialist, SpecialistModel } from "../models/Specialist";
+import { default as Specialist, Question, SpecialistModel } from "../models/Specialist";
 
 export type UserModel = mongoose.Document & {
     email: string,
@@ -15,6 +15,7 @@ export type UserModel = mongoose.Document & {
     tokens: AuthToken[],
 
     specialist: string,
+    questions: Question[],
 
     profile: {
         firstName: string,
@@ -28,7 +29,7 @@ export type UserModel = mongoose.Document & {
         picture: string
     },
 
-    patients: Patient[],
+    patients: PatientModel[],
 
     active: boolean,
 
@@ -67,6 +68,7 @@ const userSchema = new mongoose.Schema({
             message: "{VALUE} is not a valid specialist."
         }
     },
+    questions: [],
 
     profile: {
         firstName: String,
@@ -90,9 +92,11 @@ const userSchema = new mongoose.Schema({
  */
 userSchema.pre("save", function save(next) {
     const user = this;
+
     if (!user.isModified("password")) {
         return next();
     }
+
     bcrypt.genSalt(10, (err, salt) => {
         if (err) {
             return next(err);
@@ -112,7 +116,6 @@ userSchema.methods.comparePassword = function (candidatePassword: string, cb: (e
         cb(err, isMatch);
     });
 };
-
 
 /**
  * Helper method for getting user's gravatar.

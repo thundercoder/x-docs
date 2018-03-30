@@ -10,7 +10,7 @@ export const patientSchema = new mongoose.Schema({
     }
 });
 
-export type Patient = {
+export type PatientModel = {
     firstName: string,
     lastName: string,
     bodyPerson: {

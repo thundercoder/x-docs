@@ -1,5 +1,5 @@
 import { default as User, UserModel } from "../models/User";
-import { Patient } from "../models/Patient";
+import { PatientModel } from "../models/Patient";
 import { Request, Response, NextFunction } from "express";
 import { ValidationError } from "mongoose";
 
@@ -20,7 +20,7 @@ export let postCreatePatient = (req: Request, res: Response, next: NextFunction)
     User.findById(req.user.id, (err, user: UserModel) => {
         if (err) return next(err);
 
-        const patientModel: Patient = {
+        const patientModel: PatientModel = {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             bodyPerson: {
@@ -91,7 +91,7 @@ export let postUpdatePatient = (req: Request, res: Response, next: NextFunction)
  * Return a list of patients created.
  */
 export let getPatients = (req: Request, res: Response, next: NextFunction) => {
-    User.find({ "_id": req.user.id }, (err, user: UserModel) => {
+    User.findOne({ "_id": req.user.id }, (err, user: UserModel) => {
         if (err) return next(err);
 
         return res.status(200).send(user.patients);

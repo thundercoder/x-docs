@@ -7,6 +7,7 @@ import { Request, Response, NextFunction } from "express";
 import { IVerifyOptions } from "passport-local";
 import { WriteError } from "mongodb";
 import { ValidationError } from "mongoose";
+import { default as Specialist, SpecialistModel } from "../models/Specialist";
 
 const request = require("express-validator");
 
@@ -157,6 +158,13 @@ export let postUpdateProfile = async (req: Request, res: Response, next: NextFun
         if (err) {
             return next(err);
         }
+
+        Specialist.findOne({ "code": req.body.specialist }, (err, specialist: SpecialistModel) => {
+            if (specialist)
+                user.questions = specialist.questions;
+            else
+                user.questions = [];
+        });
 
         user.email = req.body.email || "";
         user.specialist = req.body.specialist || "";
