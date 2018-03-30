@@ -27,6 +27,7 @@ import * as contactController from "./controllers/contact";
 import * as patientController from "./controllers/patient";
 import * as familyController from "./controllers/family";
 import * as questionController from "./controllers/question";
+import * as eventController from "./controllers/event";
 
 
 // API keys and Passport configuration
@@ -125,6 +126,11 @@ app.get("/families/:patientId/list", passportConfig.isAuthenticated, familyContr
 app.post("/questions/create", passportConfig.isAuthenticated, questionController.postCreateQuestion);
 app.post("/questions/update", passportConfig.isAuthenticated, questionController.postUpdateQuestion);
 app.get("/questions/list", passportConfig.isAuthenticated, questionController.getQuestions);
+
+app.post("/events/create", passportConfig.isAuthenticated, eventController.postCreateEvent);
+app.post("/events/:id/update", passportConfig.isAuthenticated, eventController.postUpdateEvent);
+app.get("/events/:id/event", passportConfig.isAuthenticated, eventController.getEvent);
+app.get("/events/list", passportConfig.isAuthenticated, eventController.getEvents);
 /**
  * API examples routes.
  */
