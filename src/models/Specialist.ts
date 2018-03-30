@@ -3,10 +3,10 @@ import mongoose from "mongoose";
 export type SpecialistModel = mongoose.Document & {
     code: string,
     description: string,
-    questions: Question[]
+    questions: QuestionModel[]
 };
 
-export type Question = mongoose.Document & {
+export type QuestionModel = {
     type: string,
     question: string,
     answer: string

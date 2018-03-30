@@ -3,7 +3,7 @@ import crypto from "crypto";
 import mongoose from "mongoose";
 import { patientSchema, PatientModel } from "./Patient";
 
-import { default as Specialist, Question, SpecialistModel } from "../models/Specialist";
+import { default as Specialist, QuestionModel, SpecialistModel } from "../models/Specialist";
 
 export type UserModel = mongoose.Document & {
     email: string,
@@ -15,7 +15,7 @@ export type UserModel = mongoose.Document & {
     tokens: AuthToken[],
 
     specialist: string,
-    questions: Question[],
+    questions: QuestionModel[],
 
     profile: {
         firstName: string,
