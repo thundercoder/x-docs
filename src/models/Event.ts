@@ -24,7 +24,7 @@ export const eventSchema = new mongoose.Schema({
       message: "{VALUE} is not a valid patient."
     }
   },
-  userId: { type: String, index: true }
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 }, { timestamps: true });
 
 export type EventModel = mongoose.Document & {

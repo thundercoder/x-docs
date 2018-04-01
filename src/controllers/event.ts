@@ -1,6 +1,7 @@
 import { default as Event, EventModel } from "../models/Event";
 import { Request, Response, NextFunction } from "express";
 import { ValidationError } from "mongoose";
+import logger from "../util/logger";
 
 /**
  * POST /events/create
@@ -86,9 +87,20 @@ export let postUpdateEvent = (req: Request, res: Response, next: NextFunction) =
  * Return a list of events.
  */
 export let getEvents = (req: Request, res: Response, next: NextFunction) => {
+  /*
   Event.find({ "userId": req.user.id }, (err, event: EventModel) => {
+
     if (err) return next(err);
 
     return res.status(200).send(event);
   });
+  */
+
+  Event.find({ "userId": req.user.id })
+    .populate("userId")
+    .exec(function (err, events) {
+      if (err) logger.error(err);
+
+      return res.status(200).send(events);
+    });
 };
