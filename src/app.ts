@@ -49,8 +49,8 @@ mongoose.connect(mongoUrl, {useMongoClient: true}).then(
 
 // Express configuration
 app.set("port", process.env.PORT || 3000);
-app.set("views", path.join(__dirname, "../views"));
-app.set("view engine", "pug");
+// app.set("views", path.join(__dirname, "index.html"));
+// app.set("view engine", "pug");
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -88,9 +88,11 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(
-    express.static(path.join(__dirname, "public"), {maxAge: 31557600000})
-);
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/index.html"));
+});
 
 /**
  * Primary app routes.
