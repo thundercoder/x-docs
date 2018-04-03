@@ -52,6 +52,7 @@
     "winston": "^2.4.0"
   },
   "devDependencies": {
+    "@angular/cli": "^1.7.3",
     "@types/async": "^2.0.45",
     "@types/bcrypt-nodejs": "^0.0.30",
     "@types/bluebird": "^3.5.20",
