@@ -1,15 +1,15 @@
-import { default as User, UserModel } from "../models/User";
-import { PatientModel } from "../models/Patient";
-import { Request, Response, NextFunction } from "express";
-import { ValidationError } from "mongoose";
+import { default as User, UserModel } from '../models/User';
+import { PatientModel } from '../models/Patient';
+import { Request, Response, NextFunction } from 'express';
+import { ValidationError } from 'mongoose';
 
 /**
  * POST /patients/create
  * Create doctor's patient.
  */
 export let postCreatePatient = (req: Request, res: Response, next: NextFunction) => {
-    req.assert("firstName", "First Name cannot be blank.").notEmpty();
-    req.assert("lastName", "Las Name cannot be blank.").notEmpty();
+    req.assert('firstName', 'First Name cannot be blank.').notEmpty();
+    req.assert('lastName', 'Las Name cannot be blank.').notEmpty();
 
     const errors = req.validationErrors();
 
@@ -34,14 +34,14 @@ export let postCreatePatient = (req: Request, res: Response, next: NextFunction)
 
         user.save((err) => {
             if (err) {
-                if (err.name == "ValidationError") {
+                if (err.name == 'ValidationError') {
                     return res.status(400).send({ error: <ValidationError>err.errors[Object.keys(err.errors)[0]].message });
                 }
 
                 return next(err);
             }
 
-            res.status(200).send({  ok: true, msg: "Patient information has been created." });
+            res.status(200).send({  ok: true, msg: 'Patient information has been created.' });
         });
     });
 };
@@ -51,10 +51,10 @@ export let postCreatePatient = (req: Request, res: Response, next: NextFunction)
  * Get a simple patient of the list.
  */
 export let getPatient = (req: Request, res: Response, next: NextFunction) => {
-    User.findOne({ "_id": req.user.id, "patients._id": req.params.id }, { "patients.$": 1 }, (err, user: UserModel) => {
+    User.findOne({ '_id': req.user.id, 'patients._id': req.params.id }, { 'patients.$': 1 }, (err, user: UserModel) => {
        if (err) return next(err);
 
-       if (!user) return res.status(400).send({ error: "User not found." });
+       if (!user) return res.status(400).send({ error: 'User not found.' });
 
        return res.status(200).send(user.patients[0]);
     });
@@ -65,7 +65,7 @@ export let getPatient = (req: Request, res: Response, next: NextFunction) => {
  * Update a simple patient of the list.
  */
 export let postUpdatePatient = (req: Request, res: Response, next: NextFunction) => {
-    User.findOneAndUpdate({ "_id": req.user.id, "patients._id": req.body._id }, { "$set": { "patients.$": req.body } }, (err: any, user: any) => {
+    User.findOneAndUpdate({ '_id': req.user.id, 'patients._id': req.body._id }, { '$set': { 'patients.$': req.body } }, (err: any, user: any) => {
         if (err) return next(err);
 
         const patient = user.patients.id(req.params.id);
@@ -74,14 +74,14 @@ export let postUpdatePatient = (req: Request, res: Response, next: NextFunction)
 
         user.save((err: any) => {
             if (err) {
-                if (err.name == "ValidationError") {
+                if (err.name == 'ValidationError') {
                     return res.status(400).send({ error: <ValidationError>err.errors[Object.keys(err.errors)[0]].message });
                 }
 
                 return next(err);
             }
 
-            res.status(200).send({  ok: true, msg: "Patient information has been updated." });
+            res.status(200).send({  ok: true, msg: 'Patient information has been updated.' });
         });
     });
 };
@@ -91,7 +91,7 @@ export let postUpdatePatient = (req: Request, res: Response, next: NextFunction)
  * Return a list of patients created.
  */
 export let getPatients = (req: Request, res: Response, next: NextFunction) => {
-    User.findOne({ "_id": req.user.id }, (err, user: UserModel) => {
+    User.findOne({ '_id': req.user.id }, (err, user: UserModel) => {
         if (err) return next(err);
 
         return res.status(200).send(user.patients);

@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { default as User, UserModel } from "./User";
+import mongoose from 'mongoose';
+import { default as User, UserModel } from './User';
 
 export const familySchema = new mongoose.Schema({
   firstName: String,
@@ -12,14 +12,14 @@ export const familySchema = new mongoose.Schema({
     validate: {
       isAsync: true,
       validator: (v: any, cb: (result: any, msg?: any) => {}) => {
-        User.findOne({"patients._id": v}, {"patients.$": 1}, (err, patient: UserModel) => {
+        User.findOne({'patients._id': v}, {'patients.$': 1}, (err, patient: UserModel) => {
           if (!patient)
             cb(false);
           else
             cb(true);
         });
       },
-      message: "{VALUE} is not a valid patient."
+      message: '{VALUE} is not a valid patient.'
     }
   },
   userId: {type: String, index: true}
@@ -35,5 +35,5 @@ export type FamilyModel = mongoose.Document & {
 };
 
 // export const User: UserType = mongoose.model<UserType>('Family', familySchema);
-const Family = mongoose.model("Family", familySchema);
+const Family = mongoose.model('Family', familySchema);
 export default Family;

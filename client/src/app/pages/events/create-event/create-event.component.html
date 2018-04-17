@@ -1,0 +1,62 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      {{ patients | json }}
+      <div class="col-md-12">
+        <div id="form-container">
+          <form (submit)="onFormSubmit($event)">
+            <dx-form id="form"
+                     [showColonAfterLabel]="true"
+                     [showValidationSummary]="true"
+                     [formData]="event"
+                     validationGroup="eventData">
+
+              <div *dxTemplate="let data of 'item'">
+                {{data.firstName}} {{data.lastName}}
+              </div>
+
+              <dxi-item itemType="tabbed" [tabPanelOptions]="{ deferRendering: false }">
+                <dxi-tab title="General Information" [colCount]="2">
+                  <dxi-item itemType="group" caption="General Information">
+                    <dxi-item dataField="patientId" editorType="dxSelectBox"
+                              [editorOptions]="{ items: patients, displayExpr: 'firstName', valueExpr: '_id', searchEnabled: true, itemTemplate: 'item' }" [label]="{text: 'Patient'}">
+                      <dxi-validation-rule
+                        type="required"
+                        message="Patient is required">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <dxi-item dataField="cause" editorType="dxTextArea" [editorOptions]="{ height: 140 }">
+                      <dxi-validation-rule
+                        type="required"
+                        message="Cause is required">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <dxi-item dataField="resolution" editorType="dxTextArea" [editorOptions]="{ height: 140 }"></dxi-item>
+                  </dxi-item>
+
+                  <dxi-item itemType="group" caption="Image">
+
+                  </dxi-item>
+                </dxi-tab>
+                <dxi-tab title="Attachments">
+                  <dxi-item dataField="Skype"></dxi-item>
+                </dxi-tab>
+                <dxi-tab title="Background Questions">
+                  <dxi-item dataField="Email"></dxi-item>
+                </dxi-tab>
+              </dxi-item>
+
+            </dx-form>
+            <br />
+            <dx-button
+              text="Register"
+              type="success"
+              validationGroup="eventData"
+              [useSubmitBehavior]="true">
+            </dx-button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

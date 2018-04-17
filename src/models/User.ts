@@ -1,9 +1,9 @@
-import bcrypt from "bcrypt-nodejs";
-import crypto from "crypto";
-import mongoose from "mongoose";
-import { patientSchema, PatientModel } from "./Patient";
+import bcrypt from 'bcrypt-nodejs';
+import crypto from 'crypto';
+import mongoose from 'mongoose';
+import { patientSchema, PatientModel } from './Patient';
 
-import { default as Specialist, QuestionModel, SpecialistModel } from "../models/Specialist";
+import { default as Specialist, QuestionModel, SpecialistModel } from '../models/Specialist';
 
 export type UserModel = mongoose.Document & {
   email: string,
@@ -58,14 +58,14 @@ const userSchema = new mongoose.Schema({
     validate: {
       isAsync: true,
       validator: (v: any, cb: (result: any, msg?: any) => {}) => {
-        Specialist.findOne({"code": v}, (err, specialist: SpecialistModel) => {
+        Specialist.findOne({'code': v}, (err, specialist: SpecialistModel) => {
           if (!specialist)
             cb(false);
           else
             cb(true);
         });
       },
-      message: "{VALUE} is not a valid specialist."
+      message: '{VALUE} is not a valid specialist.'
     }
   },
   questions: [],
@@ -82,7 +82,7 @@ const userSchema = new mongoose.Schema({
   },
 
   patients: [ patientSchema ],
-  events: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
+  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
 
   active: Boolean
 
@@ -91,10 +91,10 @@ const userSchema = new mongoose.Schema({
 /**
  * Password hash middleware.
  */
-userSchema.pre("save", function save(next) {
+userSchema.pre('save', function save(next) {
   const user = this;
 
-  if (!user.isModified("password")) {
+  if (!user.isModified('password')) {
     return next();
   }
 
@@ -128,10 +128,10 @@ userSchema.methods.gravatar = function (size: number) {
   if (!this.email) {
     return `https://gravatar.com/avatar/?s=${size}&d=retro`;
   }
-  const md5 = crypto.createHash("md5").update(this.email).digest("hex");
+  const md5 = crypto.createHash('md5').update(this.email).digest('hex');
   return `https://gravatar.com/avatar/${md5}?s=${size}&d=retro`;
 };
 
 // export const User: UserType = mongoose.model<UserType>('User', userSchema);
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 export default User;

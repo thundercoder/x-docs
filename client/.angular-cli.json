@@ -19,13 +19,17 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-		    "assets/sass/light-bootstrap-dashboard.scss"
+		    "assets/sass/light-bootstrap-dashboard.scss",
+        "assets/fontawesome/css/fontawesome-all.css",
+        "../node_modules/devextreme/dist/css/dx.common.css",
+        "../node_modules/devextreme/dist/css/dx.light.css"
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.js",
         "../node_modules/bootstrap/dist/js/bootstrap.js",
         "../node_modules/bootstrap-notify/bootstrap-notify.js",
-        "../node_modules/chartist/dist/chartist.js"
+        "../node_modules/chartist/dist/chartist.js",
+        "../node_modules/devextreme/dist/js/dx.all.js"
 	  ],
       "environmentSource": "environments/environment.ts",
       "environments": {

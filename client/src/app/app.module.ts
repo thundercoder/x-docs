@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppRoutingModule } from './app.routing';
@@ -20,6 +20,8 @@ import { IconsComponent } from './icons/icons.component';
 import { MapsComponent } from './maps/maps.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { UpgradeComponent } from './upgrade/upgrade.component';
+import { LoginComponent } from './login/login.component';
+import { CrudService } from './services/crud.service';
 
 @NgModule({
   declarations: [
@@ -31,13 +33,13 @@ import { UpgradeComponent } from './upgrade/upgrade.component';
     IconsComponent,
     MapsComponent,
     NotificationsComponent,
-    UpgradeComponent
-
+    UpgradeComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     NavbarModule,
     FooterModule,
     SidebarModule,
@@ -45,7 +47,9 @@ import { UpgradeComponent } from './upgrade/upgrade.component';
     AppRoutingModule,
     LbdModule
   ],
-  providers: [],
+  providers: [
+    CrudService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

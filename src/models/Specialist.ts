@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export type SpecialistModel = mongoose.Document & {
     code: string,
@@ -19,5 +19,5 @@ const specialistSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 // export const Specialist: UserType = mongoose.model<UserType>('User', userSchema);
-const Specialist = mongoose.model("Specialist", specialistSchema);
+const Specialist = mongoose.model('Specialist', specialistSchema);
 export default Specialist;

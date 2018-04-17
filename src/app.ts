@@ -49,8 +49,8 @@ mongoose.connect(mongoUrl, {useMongoClient: true}).then(
 
 // Express configuration
 app.set('port', process.env.PORT || 3000);
-// app.set('views', path.join(__dirname, 'index.html'));
-// app.set('view engine', 'pug');
+// app.set('views', path.join(__dirname, 'public'));
+// app.set('view engine', 'html');
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -89,10 +89,6 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
-});
 
 /**
  * Primary app routes.
@@ -146,5 +142,10 @@ app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email', 'p
 app.get('/auth/facebook/callback', passport.authenticate('facebook', {failureRedirect: '/login'}), (req, res) => {
     res.redirect(req.session.returnTo || '/');
 });
+
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/index.html'));
+});
+
 
 export default app;
