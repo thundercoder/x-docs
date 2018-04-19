@@ -2,6 +2,7 @@ import { default as Event, EventModel } from '../models/Event';
 import { Request, Response, NextFunction } from 'express';
 import { ValidationError } from 'mongoose';
 import logger from '../util/logger';
+import { FileArray, UploadedFile } from 'express-fileupload';
 
 /**
  * POST /events/create
@@ -25,7 +26,7 @@ export let postCreateEvent = (req: Request, res: Response, next: NextFunction) =
     backgrundQuestions: req.body.backgrundQuestions,
     attachments: req.body.attachments || '',
     userId: req.user.id
-  }, (err: any) => {
+  }, (err: any, event: any) => {
     if (err) {
       if (err.name == 'ValidationError') {
         return res.status(400).send(<ValidationError>err.errors[Object.keys(err.errors)[0]].message);
@@ -34,7 +35,7 @@ export let postCreateEvent = (req: Request, res: Response, next: NextFunction) =
       return next(err);
     }
 
-    res.status(200).send({ok: true, msg: 'Event information has been created.'});
+    res.status(200).send({ok: true, model: event, msg: 'Event information has been created.'});
   });
 };
 
@@ -103,4 +104,40 @@ export let getEvents = (req: Request, res: Response, next: NextFunction) => {
 
       return res.status(200).send(events);
     });
+};
+
+/**
+ * POST /events/attachments
+ * Upload patient's attachments.
+ */
+export let postCreateAttachmentEvent = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.files)
+    return res.status(400).send('No files were uploaded.');
+
+  const file = <UploadedFile>req.files.attachments;
+
+  Event.findOneAndUpdate({
+    '_id': req.params.id,
+    'userId': req.user.id
+  }, {'$set': {'$': req.body}}, (err: any, event: EventModel) => {
+    if (err) return next(err);
+
+    event.attachments.push({
+      data: file.data,
+      name: file.name,
+      mimetype: file.mimetype
+    });
+
+    event.save((err: any) => {
+      if (err) {
+        if (err.name == 'ValidationError') {
+          return res.status(400).send({error: <ValidationError>err.errors[ Object.keys(err.errors)[ 0 ] ].message});
+        }
+
+        return next(err);
+      }
+
+      res.status(200).send({ok: true, msg: 'Event information has been updated.'});
+    });
+  });
 };

@@ -5,7 +5,7 @@ export class Event {
   cause: string;
   resolution: string;
   patientId: string;
-  attachments: string[];
+  attachments: any[] = [];
   backgroundQuestions: Question[];
   date: Date;
 }

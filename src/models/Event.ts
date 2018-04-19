@@ -7,7 +7,7 @@ export const eventSchema = new mongoose.Schema({
   cause: String,
   resolution: String,
   backgrundQuestions: [],
-  attachments: [String],
+  attachments: [],
   patientId: {
     type: String,
     index: true,
@@ -31,7 +31,7 @@ export type EventModel = mongoose.Document & {
   cause: string,
   resolution: string,
   backgroundQuestions: QuestionModel[],
-  attachments: string[],
+  attachments: any[],
   patientId: string,
   userId: string
 };

@@ -16,12 +16,23 @@ export class CrudService {
     this.apiHeaders.append('Content-Type', 'application/json');
   }
 
-  createEntity(endpoint: string, entity: any): Promise<any> {
-    /*
+  getEntityById(endpoint: string, id: string): Promise<any> {
     this.http.post(`${this.apiDocs}/login`, {email: 'hectorglara@outlook.com', password: 'abc*123'}, {headers: this.apiHeaders})
       .toPromise()
       .then(res => console.log('fulfill'));
-    */
+
+    return this.http.get(`${this.apiDocs}/${endpoint}/${id}/${endpoint.substr(0, endpoint.length - 1)}`, { headers: this.apiHeaders, withCredentials: true })
+      .toPromise()
+      .then(res => {
+        return res;
+      })
+      .catch(err => this.handleError(err, 'GET', id));
+  }
+
+  createEntity(endpoint: string, entity: any): Promise<any> {
+    this.http.post(`${this.apiDocs}/login`, {email: 'hectorglara@outlook.com', password: 'abc*123'}, {headers: this.apiHeaders})
+      .toPromise()
+      .then(res => console.log('fulfill'));
 
     return this.http.post(`${this.apiDocs}/${endpoint}`, entity, { headers: this.apiHeaders, withCredentials: true })
       .toPromise()
@@ -32,11 +43,11 @@ export class CrudService {
   }
 
   listEntity(endpoint: string): Promise<any> {
-    /*
+
     this.http.post(`${this.apiDocs}/login`, {email: 'hectorglara@outlook.com', password: 'abc*123'}, {headers: this.apiHeaders})
       .toPromise()
       .then(res => console.log('fulfill'));
-    */
+
 
     return this.http.get(`${this.apiDocs}/${endpoint}`, { headers: this.apiHeaders, withCredentials: true })
       .toPromise()

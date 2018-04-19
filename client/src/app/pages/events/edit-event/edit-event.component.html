@@ -35,6 +35,19 @@
                   </dxi-item>
                 </dxi-tab>
 
+                <dxi-tab title="Attachments">
+                  <dx-file-uploader
+                    #fileUploader
+                    [(uploadUrl)]="url"
+                    [multiple]="true"
+                    accept="image/*"
+                    name="attachments"
+                    uploadMode="instantly"
+                  ></dx-file-uploader>
+
+                  
+                </dxi-tab>
+
                 <dxi-tab title="Background Questions">
                   <dxi-item dataField="Email"></dxi-item>
                 </dxi-tab>

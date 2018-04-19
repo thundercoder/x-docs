@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event } from '../../../models/event';
 import { CrudService } from '../../../services/crud.service';
 import { Patient } from '../../../models/patient';
+import notify from 'devextreme/ui/notify';
+import { NgForm } from '@angular/forms';
 declare var $: any;
 
 @Component({
@@ -11,12 +13,14 @@ declare var $: any;
 })
 export class CreateEventComponent implements OnInit {
 
+  @ViewChild('form') form: NgForm;
   event: Event;
   patients: Patient[];
-  routes: string;
 
   constructor(private crud: CrudService) {
     this.event = new Event();
+
+    // Get patient's list from the Doctor
     this.crud.listEntity('patients')
       .then(res => this.patients = <Patient[]>res);
   }
@@ -24,19 +28,10 @@ export class CreateEventComponent implements OnInit {
   ngOnInit() { }
 
   onFormSubmit (e) {
+    // Create a patient event
     this.crud.createEntity('events/create', this.event)
-      .then(() => {
-        $.notify({
-          icon: 'fas fa-check',
-          message: '<b>Event</b> was added satisfactory.'
-        }, {
-          type: 'success',
-          timer: 500,
-          placement: {
-            from: 'top',
-            align: 'center'
-          }
-        });
+      .then((res) => {
+        notify('Event was added satisfactory.', 'success', 1000);
       });
 
     e.preventDefault();

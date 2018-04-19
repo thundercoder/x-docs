@@ -24,6 +24,7 @@ const routes: Routes = [
   {path: 'upgrade', component: UpgradeComponent},
   {path: 'login', component: LoginComponent},
   {path: 'events', loadChildren: 'app/pages/events/create-event/create-event.module#CreateEventModule'},
+  {path: 'events/:id/detail', loadChildren: 'app/pages/events/edit-event/edit-event.module#EditEventModule'},
   {path: '', redirectTo: 'dashboard', pathMatch: 'full'}
 ];
 
@@ -33,7 +34,7 @@ const routes: Routes = [
     BrowserModule,
     RouterModule.forRoot(routes)
   ],
-  exports: [RouterModule],
+  exports: [ RouterModule ],
 })
 export class AppRoutingModule {
 }

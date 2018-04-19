@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 import { DxFormModule, DxTextAreaModule, DxCheckBoxModule, DxSelectBoxModule, DxButtonModule, DxTemplateModule, DxFileUploaderModule } from 'devextreme-angular';
-import { CreateEventComponent } from './create-event.component';
+import { EditEventComponent } from './edit-event.component';
 
 const routes: Routes = [{
   path: '',
-  component: CreateEventComponent
+  component: EditEventComponent
 }];
 
 @NgModule({
@@ -23,7 +23,7 @@ const routes: Routes = [{
     DxFileUploaderModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ CreateEventComponent ]
+  declarations: [ EditEventComponent ]
 })
-export class CreateEventModule {
+export class EditEventModule {
 }
