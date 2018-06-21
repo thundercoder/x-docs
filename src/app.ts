@@ -50,8 +50,8 @@ mongoose.connect(mongoUrl, {useMongoClient: true}).then(
 
 // Express configuration
 app.set('port', process.env.PORT || 3000);
-// app.set('views', path.join(__dirname, 'public'));
-// app.set('view engine', 'html');
+app.set('views', path.join(__dirname, 'public'));
+app.set('view engine', 'html');
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -132,6 +132,7 @@ app.post('/events/:id/update', passportConfig.isAuthenticated, eventController.p
 app.get('/events/:id/event', passportConfig.isAuthenticated, eventController.getEvent);
 app.get('/events/list', passportConfig.isAuthenticated, eventController.getEvents);
 app.post('/events/attachments/:id', passportConfig.isAuthenticated, eventController.postCreateAttachmentEvent);
+app.get('/events/:id/attachments/:name/download', passportConfig.isAuthenticated, eventController.getAttachmentEvent);
 /**
  * API examples routes.
  */

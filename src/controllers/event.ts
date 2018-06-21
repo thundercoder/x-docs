@@ -3,6 +3,9 @@ import { Request, Response, NextFunction } from 'express';
 import { ValidationError } from 'mongoose';
 import logger from '../util/logger';
 import { FileArray, UploadedFile } from 'express-fileupload';
+import { default as User, UserModel } from '../models/User';
+import { removeErrorMarkup } from 'tslint/lib/verify/parse';
+import { userInfo } from 'os';
 
 /**
  * POST /events/create
@@ -139,5 +142,34 @@ export let postCreateAttachmentEvent = (req: Request, res: Response, next: NextF
 
       res.status(200).send({ok: true, msg: 'Event information has been updated.'});
     });
+  });
+};
+
+/**
+ * GET /events/:id/attachments/:name/download
+ * @param {e.Request} req
+ * @param {e.Response} res
+ * @param {e.NextFunction} next
+ * @returns {Response}
+ */
+export let getAttachmentEvent = (req: Request, res: Response, next: NextFunction) => {
+
+  req.assert('id', 'Event was not specified.').notEmpty();
+  req.assert('name', 'Attachment was not specified.').notEmpty();
+
+  const errors = req.validationErrors();
+
+  if (errors) {
+    return res.status(403).send(errors);
+  }
+
+  Event.findOne({ '_id': req.params.id, 'attachments.name': req.params.name, 'userId': req.user.id }, { 'attachments.$': 1 }, (err, attachment: any) => {
+    if (err) return next(err);
+
+    if (!attachment) return res.status(400).send({ error: 'Attachment not found.' });
+
+    res.contentType(attachment._doc.attachments[0].mimetype);
+    res.send(attachment._doc.attachments[0].data);
+    // return res.status(200).send(attachment);
   });
 };

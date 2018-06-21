@@ -1,13 +1,14 @@
 import mongoose from 'mongoose';
 import { default as User, UserModel } from './User';
 import { QuestionModel } from './Specialist';
+import { attachmentSchema } from './Attachment';
 
 export const eventSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   cause: String,
   resolution: String,
   backgrundQuestions: [],
-  attachments: [],
+  attachments: [ attachmentSchema ],
   patientId: {
     type: String,
     index: true,
