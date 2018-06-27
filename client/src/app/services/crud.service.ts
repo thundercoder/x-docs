@@ -42,9 +42,22 @@ export class CrudService {
       .catch(err => this.handleError(err, 'POST', entity));
   }
 
+  updateEntity(endpoint: string, entity: any): Promise<any> {
+    this.http.post(`${this.apiDocs}/login`, {email: 'hectorglara@outlook.com', password: 'abc*123'}, {headers: this.apiHeaders})
+      .toPromise()
+      .then(res => console.log('fulfill'));
+
+    return this.http.put(`${this.apiDocs}/${endpoint}`, entity, { headers: this.apiHeaders, withCredentials: true })
+      .toPromise()
+      .then(res => {
+        return res;
+      })
+      .catch(err => this.handleError(err, 'PUT', entity));
+  }
+
   listEntity(endpoint: string): Promise<any> {
 
-    this.http.post(`${this.apiDocs}/login`, {email: 'hectorglara@outlook.com', password: 'abc*123'}, {headers: this.apiHeaders})
+    this.http.post(`${this.apiDocs}/login`, {email: 'hectorglara@outlook.com', password: 'abc*123'}, { headers: this.apiHeaders })
       .toPromise()
       .then(res => console.log('fulfill'));
 

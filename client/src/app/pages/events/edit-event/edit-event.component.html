@@ -14,27 +14,28 @@
                 {{data.firstName}} {{data.lastName}}
               </div>
 
-              <dxi-item itemType="tabbed" [tabPanelOptions]="{ deferRendering: false }">
-
+              <dxi-item itemType="tabbed" [tabPanelOptions]="{ deferRendering: false, swipeEnabled: false }">
+                <!-- General Information -->
                 <dxi-tab title="General Information">
-                  <dxi-item itemType="group" caption="General Information">
-                    <dxi-item dataField="patientId" editorType="dxSelectBox"
-                              [editorOptions]="{ items: patients, displayExpr: 'firstName', valueExpr: '_id', searchEnabled: true, itemTemplate: 'item' }" [label]="{text: 'Patient'}">
-                      <dxi-validation-rule
-                        type="required"
-                        message="Patient is required">
-                      </dxi-validation-rule>
-                    </dxi-item>
-                    <dxi-item dataField="cause" editorType="dxTextArea" [editorOptions]="{ height: 140 }">
-                      <dxi-validation-rule
-                        type="required"
-                        message="Cause is required">
-                      </dxi-validation-rule>
-                    </dxi-item>
-                    <dxi-item dataField="resolution" editorType="dxTextArea" [editorOptions]="{ height: 140 }"></dxi-item>
+                  <dxi-item dataField="patientId" editorType="dxSelectBox"
+                            [editorOptions]="{ items: patients, displayExpr: 'firstName', valueExpr: '_id', searchEnabled: true, itemTemplate: 'item' }"
+                            [label]="{text: 'Patient'}">
+                    <dxi-validation-rule
+                      type="required"
+                      message="Patient is required">
+                    </dxi-validation-rule>
                   </dxi-item>
+                  <dxi-item dataField="cause" editorType="dxTextArea" [editorOptions]="{ height: 140 }">
+                    <dxi-validation-rule
+                      type="required"
+                      message="Cause is required">
+                    </dxi-validation-rule>
+                  </dxi-item>
+                  <dxi-item dataField="resolution" editorType="dxTextArea"
+                            [editorOptions]="{ height: 140 }"></dxi-item>
                 </dxi-tab>
 
+                <!-- Attachments -->
                 <dxi-tab title="Attachments">
                   <dx-file-uploader
                     #fileUploader
@@ -43,20 +44,94 @@
                     accept="image/*"
                     name="attachments"
                     uploadMode="instantly"
+                    (onUploaded)="refresh()"
                   ></dx-file-uploader>
 
-                  
+                  <div *ngIf="attachments" class="list-container">
+                    <dx-list [items]="attachments" height="100%">
+                      <div *dxTemplate="let item of 'item'">
+                        <div class="product">
+                          <img src="{{ mainUrl }}/events/{{ event._id }}/attachments/{{ item.name }}/download"/>
+                          <div>{{ item.name }}</div>
+                          <div class="price">
+                            <a download="custom-filename.jpg" href="{{ mainUrl }}/events/{{ event._id }}/attachments/{{ item.name }}/download" title="ImageName">
+                              <i class="fas fa-download"></i> Download
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </dx-list>
+                  </div>
+
                 </dxi-tab>
 
+                <!-- Background Questions -->
                 <dxi-tab title="Background Questions">
-                  <dxi-item dataField="Email"></dxi-item>
+                  <div *ngIf="event.backgroundQuestions.length > 0">
+                    <div id="multiview">
+                      <div>
+                        Question <span>{{ multiview.selectedIndex + 1 }}</span> of <span>{{ event.backgroundQuestions.length }}</span>
+                      </div>
+                      <dx-multi-view
+                        #multiview
+                        [height]="300"
+                        [dataSource]="event.backgroundQuestions"
+                        [selectedIndex]="0"
+                        [swipeEnabled]="false"
+                        [loop]="false"
+                        [animationEnabled]="true">
+                        <div *dxTemplate="let q of 'item'; let i = index">
+                          <div class="multiview-item">
+                            <h5>{{ q.question }}</h5>
+                            <!--Question Type YES_NO-->
+                            <div *ngIf="q.type == 'YES_NO'">
+                              <dx-select-box [items]="['YES', 'NO']" [(ngModel)]="event.backgroundQuestions[i].answer"
+                                             [ngModelOptions]="{ standalone: true }">
+                              </dx-select-box>
+                            </div>
+                            <!--Question Type DATE-->
+                            <div *ngIf="q.type == 'DATE'">
+                              <dx-date-box [(ngModel)]="event.backgroundQuestions[i].answer"
+                                           [ngModelOptions]="{ standalone: true }" type="date">
+                              </dx-date-box>
+                            </div>
+                            <!--Question Type NUMBER-->
+                            <div *ngIf="q.type == 'NUMBER'">
+                              <dx-number-box
+                                [(ngModel)]="event.backgroundQuestions[i].answer"
+                                [ngModelOptions]="{ standalone: true }"
+                                [showSpinButtons]="true"
+                                [showClearButton]="true"
+                              ></dx-number-box>
+                            </div>
+                            <!--Question Type OPEN-->
+                            <div *ngIf="q.type == 'OPEN'">
+                              <dx-text-area
+                                [(ngModel)]="event.backgroundQuestions[i].answer"
+                                [ngModelOptions]="{ standalone: true }"
+                                [height]="90">
+                              </dx-text-area>
+                            </div>
+                          </div>
+                        </div>
+                      </dx-multi-view>
+                    </div>
+                  </div>
+
+                  <br>
+                  <div>
+                    <dx-button text="Back" type="normal" icon="fas fa-arrow-circle-left"
+                               (onClick)="back()"></dx-button>
+                    <dx-button text="Next" type="normal" icon="fas fa-arrow-circle-right" style="float: right"
+                               (onClick)="next()"></dx-button>
+                  </div>
                 </dxi-tab>
               </dxi-item>
 
             </dx-form>
-            <br />
+            <br/>
             <dx-button
-              text="Register"
+              text="Save"
               type="success"
               validationGroup="eventData"
               [useSubmitBehavior]="true">

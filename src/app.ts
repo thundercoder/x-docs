@@ -50,7 +50,9 @@ mongoose.connect(mongoUrl, {useMongoClient: true}).then(
 
 // Express configuration
 app.set('port', process.env.PORT || 3000);
+app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'public'));
+app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(compression());
 app.use(bodyParser.json());
@@ -114,25 +116,27 @@ app.post('/account/delete', passportConfig.isAuthenticated, userController.postD
 app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
 
 app.post('/patients/create', passportConfig.isAuthenticated, patientController.postCreatePatient);
-app.post('/patients/:id/update', passportConfig.isAuthenticated, patientController.postUpdatePatient);
+app.put('/patients/:id/update', passportConfig.isAuthenticated, patientController.postUpdatePatient);
 app.get('/patients/:id/patient', passportConfig.isAuthenticated, patientController.getPatient);
 app.get('/patients', passportConfig.isAuthenticated, patientController.getPatients);
 
 app.post('/families/create', passportConfig.isAuthenticated, familyController.postCreateFamily);
-app.post('/families/:id/update', passportConfig.isAuthenticated, familyController.postUpdateFamily);
+app.put('/families/:id/update', passportConfig.isAuthenticated, familyController.postUpdateFamily);
 app.get('/families/:id/family', passportConfig.isAuthenticated, familyController.getFamily);
 app.get('/families/:patientId/list', passportConfig.isAuthenticated, familyController.getFamilies);
 
 app.post('/questions/create', passportConfig.isAuthenticated, questionController.postCreateQuestion);
-app.post('/questions/update', passportConfig.isAuthenticated, questionController.postUpdateQuestion);
+app.put('/questions/update', passportConfig.isAuthenticated, questionController.postUpdateQuestion);
 app.get('/questions/list', passportConfig.isAuthenticated, questionController.getQuestions);
 
 app.post('/events/create', passportConfig.isAuthenticated, eventController.postCreateEvent);
-app.post('/events/:id/update', passportConfig.isAuthenticated, eventController.postUpdateEvent);
+app.put('/events/:id/update', passportConfig.isAuthenticated, eventController.postUpdateEvent);
 app.get('/events/:id/event', passportConfig.isAuthenticated, eventController.getEvent);
 app.get('/events/list', passportConfig.isAuthenticated, eventController.getEvents);
 app.post('/events/attachments/:id', passportConfig.isAuthenticated, eventController.postCreateAttachmentEvent);
 app.get('/events/:id/attachments/:name/download', passportConfig.isAuthenticated, eventController.getAttachmentEvent);
+app.get('/events/:id/attachments', passportConfig.isAuthenticated, eventController.getAttachmentsEvent);
+
 /**
  * API examples routes.
  */

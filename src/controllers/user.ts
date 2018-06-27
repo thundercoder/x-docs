@@ -16,12 +16,10 @@ const request = require('express-validator');
  * Login page.
  */
 export let getLogin = (req: Request, res: Response) => {
-  if (req.user) {
-    return res.redirect('/');
-  }
-  res.render('account/login', {
-    title: 'Login'
-  });
+  if (req.user)
+    return res.status(200).send({ user: req.user });
+
+  return res.status(403).send();
 };
 
 /**
@@ -33,17 +31,16 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
   req.assert('password', 'Password cannot be blank').notEmpty();
   req.sanitize('email').normalizeEmail({gmail_remove_dots: false});
 
-  const errors = req.validationErrors();
+  const errors = <any[]>req.validationErrors();
 
-  if (errors) {
-    req.flash('errors', errors);
-    return res.redirect('/login');
-  }
+  if (errors)
+    res.status(400).send({ error: errors[0].msg});
 
   passport.authenticate('local', (err: Error, user: UserModel, info: IVerifyOptions) => {
     if (err) {
       return next(err);
     }
+
     if (!user) {
       return res.status(403).send({error: info.message});
     }
@@ -175,8 +172,7 @@ export let postUpdateProfile = async (req: Request, res: Response, next: NextFun
     user.save((err) => {
       if (err) {
         if (err.code === 11000) {
-          req.flash('errors', {msg: 'The email address you have entered is already associated with an account.'});
-          return res.redirect('/account');
+          return res.status(403).send({ error: 'The email address you have entered is already associated with an account.' });
         }
 
         if (err.name == 'ValidationError') {
@@ -185,8 +181,7 @@ export let postUpdateProfile = async (req: Request, res: Response, next: NextFun
 
         return next(err);
       }
-      req.flash('success', {msg: 'Profile information has been updated.'});
-      res.redirect('/account');
+      return res.status(200).send({ ok: true, msg: 'Profile information has been updated.' });
     });
   });
 };

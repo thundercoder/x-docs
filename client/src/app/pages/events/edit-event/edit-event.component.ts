@@ -4,7 +4,7 @@ import { CrudService } from '../../../services/crud.service';
 import { Event } from '../../../models/event';
 import { environment } from 'environments/environment';
 import notify from 'devextreme/ui/notify';
-import { DxFileUploaderComponent } from 'devextreme-angular';
+import { DxFileUploaderComponent, DxMultiViewComponent } from 'devextreme-angular';
 import { Patient } from '../../../models/patient';
 
 @Component({
@@ -16,9 +16,13 @@ export class EditEventComponent implements OnInit, OnDestroy {
 
   event: Event;
   private sub: any;
+  mainUrl: string = environment.restApi;
   url: string = environment.restApi;
   patients: Patient[];
+  attachments: any[];
+  multiviewBehavior: any;
   @ViewChild('fileUploader') fileUploader: DxFileUploaderComponent;
+  @ViewChild('multiview') multiview: DxMultiViewComponent;
 
   constructor(private crud: CrudService, private route: ActivatedRoute) {
     this.event = new Event();
@@ -28,13 +32,26 @@ export class EditEventComponent implements OnInit, OnDestroy {
       .then(res => this.patients = <Patient[]>res);
   }
 
+  back(): void {
+    if (this.multiview.selectedItem != 0)
+      this.multiview.selectedIndex -= 1;
+  }
+
+  next(): void {
+    if (this.multiview.selectedItem != (this.multiview.items.length - 1))
+      this.multiview.selectedIndex += 1;
+  }
+
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
       this.crud.getEntityById('events', params[ 'id' ])
-        .then(res => this.event = res);
+        .then(res => {
+          this.event = res;
+          this.refresh();
+        });
 
+      // Set attachments post method for uploading files
       this.url = `${this.url}/events/attachments/${params[ 'id' ]}`;
-      // this.fileUploader.uploadUrl = this.url;
     });
   }
 
@@ -42,9 +59,15 @@ export class EditEventComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
   }
 
+  refresh() {
+    // Get attachments related to event
+    this.crud.listEntity(`events/${this.event._id}/attachments`)
+      .then(res => this.attachments = res);
+  }
+
   onFormSubmit(e) {
     // Create a patient event
-    this.crud.createEntity(`events/${this.event._id}/update`, this.event)
+    this.crud.updateEntity(`events/${this.event._id}/update`, this.event)
       .then((res) => {
         notify('Event was updated satisfactory.', 'success', 1000);
       });

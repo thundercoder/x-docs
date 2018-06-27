@@ -7,7 +7,7 @@ export const eventSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   cause: String,
   resolution: String,
-  backgrundQuestions: [],
+  backgroundQuestions: [],
   attachments: [ attachmentSchema ],
   patientId: {
     type: String,

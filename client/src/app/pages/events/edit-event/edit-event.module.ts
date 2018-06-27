@@ -2,7 +2,17 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
-import { DxFormModule, DxTextAreaModule, DxCheckBoxModule, DxSelectBoxModule, DxButtonModule, DxTemplateModule, DxFileUploaderModule } from 'devextreme-angular';
+import {
+  DxFormModule,
+  DxTextAreaModule,
+  DxCheckBoxModule,
+  DxSelectBoxModule,
+  DxButtonModule,
+  DxTemplateModule,
+  DxFileUploaderModule,
+  DxListModule,
+  DxMultiViewModule, DxDateBoxModule, DxNumberBoxModule
+} from 'devextreme-angular';
 import { EditEventComponent } from './edit-event.component';
 
 const routes: Routes = [{
@@ -14,6 +24,7 @@ const routes: Routes = [{
   imports: [
     CommonModule,
     DxFormModule,
+    DxListModule,
     DxTextAreaModule,
     DxCheckBoxModule,
     DxSelectBoxModule,
@@ -21,6 +32,10 @@ const routes: Routes = [{
     FormsModule,
     DxTemplateModule,
     DxFileUploaderModule,
+    DxMultiViewModule,
+    DxDateBoxModule,
+    DxNumberBoxModule,
+    DxTextAreaModule,
     RouterModule.forChild(routes)
   ],
   declarations: [ EditEventComponent ]

@@ -6,6 +6,7 @@ import { FileArray, UploadedFile } from 'express-fileupload';
 import { default as User, UserModel } from '../models/User';
 import { removeErrorMarkup } from 'tslint/lib/verify/parse';
 import { userInfo } from 'os';
+import { Dictionary, MappedError } from 'express-validator/shared-typings';
 
 /**
  * POST /events/create
@@ -13,20 +14,20 @@ import { userInfo } from 'os';
  */
 export let postCreateEvent = (req: Request, res: Response, next: NextFunction) => {
   req.assert('cause', 'First Name cannot be blank.').notEmpty();
-  req.assert('resolution', 'Las Name cannot be blank.').notEmpty();
+  req.assert('resolution', 'Resolution cannot be blank.').notEmpty();
   req.assert('patientId', 'Las Name cannot be blank.').notEmpty();
 
-  const errors = req.validationErrors();
+  const errors = <any[]>req.validationErrors();
 
   if (errors) {
-    return res.status(400).send({errors: errors});
+    return res.status(400).send({ error: errors[0].msg });
   }
 
   Event.create({
     cause: req.body.cause,
     resolution: req.body.resolution,
     patientId: req.body.patientId,
-    backgrundQuestions: req.body.backgrundQuestions,
+    backgroundQuestions: req.user.questions,
     attachments: req.body.attachments || '',
     userId: req.user.id
   }, (err: any, event: any) => {
@@ -47,7 +48,7 @@ export let postCreateEvent = (req: Request, res: Response, next: NextFunction) =
  * Get a simple event by id.
  */
 export let getEvent = (req: Request, res: Response, next: NextFunction) => {
-  Event.findOne({'_id': req.params.id, 'userId': req.user.id}, (err: any, event: EventModel) => {
+  Event.findOne({'_id': req.params.id, 'userId': req.user.id}, { 'cause': 1, 'resolution': 1, 'patientId': 1, 'backgroundQuestions': 1 }, (err: any, event: EventModel) => {
     if (err) return next(err);
 
     if (!event) return res.status(404).send({error: 'Event not found.'});
@@ -69,7 +70,6 @@ export let postUpdateEvent = (req: Request, res: Response, next: NextFunction) =
 
     event.cause = req.body.cause;
     event.resolution = req.body.resolution;
-    event.attachments = req.body.attachments;
     event.backgroundQuestions = req.body.backgroundQuestions;
 
     event.save((err: any) => {
@@ -91,16 +91,7 @@ export let postUpdateEvent = (req: Request, res: Response, next: NextFunction) =
  * Return a list of events.
  */
 export let getEvents = (req: Request, res: Response, next: NextFunction) => {
-  /*
-  Event.find({ 'userId': req.user.id }, (err, event: EventModel) => {
-
-    if (err) return next(err);
-
-    return res.status(200).send(event);
-  });
-  */
-
-  Event.find({ 'userId': req.user.id })
+   Event.find({ 'userId': req.user.id }, { 'attachments': 0 })
     .populate('userId')
     .exec(function (err, events) {
       if (err) logger.error(err);
@@ -146,7 +137,8 @@ export let postCreateAttachmentEvent = (req: Request, res: Response, next: NextF
 };
 
 /**
- * GET /events/:id/attachments/:name/download
+ * GET /events/{id}/attachments/{name}/download
+ * Get a specific attachment from an event.
  * @param {e.Request} req
  * @param {e.Response} res
  * @param {e.NextFunction} next
@@ -171,5 +163,30 @@ export let getAttachmentEvent = (req: Request, res: Response, next: NextFunction
     res.contentType(attachment._doc.attachments[0].mimetype);
     res.send(attachment._doc.attachments[0].data);
     // return res.status(200).send(attachment);
+  });
+};
+
+/**
+ * GET /events/{id}/attachments
+ * Get all attachments related of an event.
+ * @param {e.Request} req
+ * @param {e.Response} res
+ * @param {e.NextFunction} next
+ * @returns {Response}
+ */
+export let getAttachmentsEvent = (req: Request, res: Response, next: NextFunction) => {
+
+  req.assert('id', 'Event was not specified.').notEmpty();
+  const errors = req.validationErrors();
+
+  if (errors) {
+    return res.status(403).send(errors);
+  }
+
+  Event.findOne({ '_id': req.params.id, 'userId': req.user.id }, { 'attachments.name': 1 },  (err, event: any) => {
+    if (err) return next(err);
+    if (!event) return res.status(400).send({ error: 'Attachments not found.' });
+
+    return res.status(200).send(event.attachments);
   });
 };
