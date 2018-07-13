@@ -8,18 +8,25 @@ import { IVerifyOptions } from 'passport-local';
 import { WriteError } from 'mongodb';
 import { ValidationError } from 'mongoose';
 import { default as Specialist, SpecialistModel } from '../models/Specialist';
+import { UploadedFile } from 'express-fileupload';
+import { promisify } from 'util';
+import fs from 'fs';
+import childProcess from 'child_process';
 
-const request = require('express-validator');
+const deleteFiles = promisify(fs.unlink);
+const compressImages = promisify(childProcess.exec);
 
 /**
  * GET /login
  * Login page.
  */
 export let getLogin = (req: Request, res: Response) => {
-  if (req.user)
-    return res.status(200).send({ user: req.user });
+  User.findOne({ _id: req.user._id }, { 'profile.picture': 0 }, (err, currentUser) => {
+    if (err)
+      return res.status(404).send({ ok: false, message: 'User doesn\'t exist' });
 
-  return res.status(403).send();
+    return res.status(200).send(currentUser);
+  });
 };
 
 /**
@@ -66,6 +73,59 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
 export let logout = (req: Request, res: Response) => {
   req.logout();
   res.redirect('/');
+};
+
+/**
+ * POST /account/upload/picture
+ * Upload user's photo.
+ */
+export let postUploadPicture = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.files) return res.status(400).send({ ok: false, message: 'No files were specified.' });
+
+  const file = <UploadedFile>req.files.attachments;
+
+  // Move the file to a folder to be compressed
+  file.mv('images-wrong/' + file.name, (err: any) => {
+    if (err)
+      next('There was a error saving the image');
+
+    compressImages('node execute-compress-image.js')
+      .then(() => {
+        fs.readFile('images-good/' + file.name, (err, data) => {
+          if (err) return next(err);
+
+          User.findByIdAndUpdate({ _id: req.user._id }, {'$set': { '$': req.body }}, (err: any, model: any) => {
+            model.profile.picture = data;
+
+            model.save();
+          });
+        });
+
+        deleteFiles('images-wrong/' + file.name);
+        deleteFiles('images-good/' + file.name);
+      });
+  });
+
+  return res.status(200).send({ok: true, msg: 'Picture has been uploaded.'});
+};
+
+/**
+ * GET /account/get/picture
+ * Get the picture related of an user.
+ * @param {e.Request} req
+ * @param {e.Response} res
+ * @param {e.NextFunction} next
+ * @returns {Response}
+ */
+export let getUserPicture = (req: Request, res: Response, next: NextFunction) => {
+  User.findOne({ _id: req.user._id }, (err: any, user: any) => {
+    if (err) return next(err);
+
+    if (!user) return res.status(404).send({error: 'Picture not found.'});
+
+    res.contentType('image/jpeg');
+    res.send(user.profile.picture);
+  });
 };
 
 /**
@@ -136,6 +196,20 @@ export let getAccount = (req: Request, res: Response) => {
 };
 
 /**
+ * GET /specialists
+ * Update profile information.
+ */
+export let getSpecialists = (req: Request, res: Response, next: NextFunction) => {
+  // Looking for questions belong Specialist given
+  Specialist.find({}, { _id: 1, code: 1, description: 1 }, (err, specialist: SpecialistModel[]) => {
+    if (specialist.length > 0)
+      return res.status(200).send(specialist);
+
+     return res.status(404).send({ ok: true, message: 'Specialists not found.' });
+  });
+};
+
+/**
  * POST /account/profile
  * Update profile information.
  */
@@ -143,11 +217,10 @@ export let postUpdateProfile = async (req: Request, res: Response, next: NextFun
   req.assert('email', 'Please enter a valid email address.').isEmail();
   req.sanitize('email').normalizeEmail({gmail_remove_dots: false});
 
-  const errors = req.validationErrors();
+  const errors = <any[]>req.validationErrors();
 
   if (errors) {
-    req.flash('errors', errors);
-    return res.redirect('/account');
+    return res.status(400).send({ ok: false, message: errors[0].msg });
   }
 
   User.findById(req.user.id, (err, user: UserModel) => {
@@ -155,28 +228,34 @@ export let postUpdateProfile = async (req: Request, res: Response, next: NextFun
       return next(err);
     }
 
-    Specialist.findOne({'code': req.body.specialist}, (err, specialist: SpecialistModel) => {
-      if (specialist)
-        user.questions = specialist.questions;
-      else
-        user.questions = [];
-    });
+    // Looking for questions belong Specialist given if it has been changed
+    if (user.specialist != req.body.specialist)
+      Specialist.findOne({'code': req.body.specialist}, (err, specialist: SpecialistModel) => {
+        if (specialist)
+          user.questions = specialist.questions;
+      });
+    else
+      user.questions = req.body.questions;
 
     user.email = req.body.email || '';
     user.specialist = req.body.specialist || '';
-    user.profile.firstName = req.body.name || '';
-    user.profile.gender = req.body.gender || '';
-    user.profile.location = req.body.location || '';
-    user.profile.website = req.body.website || '';
+    user.profile.firstName = req.body.profile.firstName || '';
+    user.profile.lastName = req.body.profile.lastName || '';
+    user.profile.birthDate = req.body.profile.birthDate || '';
+    user.profile.phone = req.body.profile.phone || '';
+    user.profile.mobile = req.body.profile.mobile || '';
+    user.profile.gender = req.body.profile.gender || '';
+    user.profile.address = req.body.profile.address || '';
+    user.profile.website = req.body.profile.website || '';
 
     user.save((err) => {
       if (err) {
         if (err.code === 11000) {
-          return res.status(403).send({ error: 'The email address you have entered is already associated with an account.' });
+          return res.status(400).send({ ok: false, message: 'The email address you have entered is already associated with an account.' });
         }
 
         if (err.name == 'ValidationError') {
-          return res.status(400).send({error: <ValidationError>err.errors[ Object.keys(err.errors)[ 0 ] ].message});
+          return res.status(400).send({ok: false, message: <ValidationError>err.errors[ Object.keys(err.errors)[ 0 ] ].message});
         }
 
         return next(err);

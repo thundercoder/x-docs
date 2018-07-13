@@ -1,0 +1,10 @@
+File from: [images-wrong/lice.jpg]
+
+File to: [images-good/lice.jpg]
+
+Compression algorithm: [mozjpeg]
+
+============== LOG ============== 
+Error: Command failed: C:\Projects\xeniall\x-docs\node_modules\mozjpeg\vendor\cjpeg.exe -quality 60 -outfile images-good/lice.jpg images-wrong/lice.jpg
+Unrecognized input file format --- perhaps you need -targa
+================================= 

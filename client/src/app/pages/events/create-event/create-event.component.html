@@ -34,19 +34,24 @@
                     <dxi-item dataField="resolution" editorType="dxTextArea" [editorOptions]="{ height: 140 }"></dxi-item>
                   </dxi-item>
                 </dxi-tab>
-
-                <dxi-tab title="Background Questions">
-                  <dxi-item dataField="Email"></dxi-item>
-                </dxi-tab>
               </dxi-item>
 
             </dx-form>
-            <br />
+            <br>
             <dx-button
-              text="Register"
+              text="Save"
+              icon="fas fa-save"
               type="success"
               validationGroup="eventData"
               [useSubmitBehavior]="true">
+            </dx-button>
+
+            <dx-button
+              text="Back"
+              type="normal"
+              icon="fas fa-arrow-left"
+              routerLink="/events"
+              [useSubmitBehavior]="false">
             </dx-button>
           </form>
         </div>

@@ -1,0 +1,10 @@
+File from: [images-wrong/1.png]
+
+File to: [images-good/1.png]
+
+Compression algorithm: [pngquant]
+
+============== LOG ============== 
+Error: Command failed: C:\Projects\xeniall\x-docs\node_modules\pngquant-bin\vendor\pngquant.exe --quality=20-50 -o images-good/1.png images-wrong/1.png
+  error: failed writing image to images-good/1.png
+================================= 

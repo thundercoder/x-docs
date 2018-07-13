@@ -98,44 +98,49 @@ app.use(express.static(path.join(__dirname, 'public')));
  * Primary app routes.
  */
 app.get('/', homeController.index);
-app.get('/login', userController.getLogin);
-app.post('/login', userController.postLogin);
-app.get('/logout', userController.logout);
-app.get('/forgot', userController.getForgot);
-app.post('/forgot', userController.postForgot);
-app.get('/reset/:token', userController.getReset);
-app.post('/reset/:token', userController.postReset);
-app.get('/signup', userController.getSignup);
-app.post('/signup', userController.postSignup);
-app.get('/contact', contactController.getContact);
-app.post('/contact', contactController.postContact);
-app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
-app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
-app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
-app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
-app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
+app.get('/api/login', userController.getLogin);
+app.post('/api/login', userController.postLogin);
+app.get('/api/logout', userController.logout);
+app.get('/api/forgot', userController.getForgot);
+app.post('/api/forgot', userController.postForgot);
+app.get('/api/reset/:token', userController.getReset);
+app.post('/api/reset/:token', userController.postReset);
+app.get('/api/signup', userController.getSignup);
+app.post('/api/signup', userController.postSignup);
+app.get('/api/contact', contactController.getContact);
+app.post('/api/contact', contactController.postContact);
+app.get('/api/account', passportConfig.isAuthenticated, userController.getAccount);
+app.put('/api/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
+app.post('/api/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
+app.post('/api/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
+app.get('/api/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
+app.post('/api/account/upload/picture', passportConfig.isAuthenticated, userController.postUploadPicture);
+app.get('/api/account/get/picture', passportConfig.isAuthenticated, userController.getUserPicture);
 
-app.post('/patients/create', passportConfig.isAuthenticated, patientController.postCreatePatient);
-app.put('/patients/:id/update', passportConfig.isAuthenticated, patientController.postUpdatePatient);
-app.get('/patients/:id/patient', passportConfig.isAuthenticated, patientController.getPatient);
-app.get('/patients', passportConfig.isAuthenticated, patientController.getPatients);
+app.post('/api/patients/create', passportConfig.isAuthenticated, patientController.postCreatePatient);
+app.put('/api/patients/:id/update', passportConfig.isAuthenticated, patientController.postUpdatePatient);
+app.get('/api/patients/:id/patient', passportConfig.isAuthenticated, patientController.getPatient);
+app.get('/api/patients', passportConfig.isAuthenticated, patientController.getPatients);
 
-app.post('/families/create', passportConfig.isAuthenticated, familyController.postCreateFamily);
-app.put('/families/:id/update', passportConfig.isAuthenticated, familyController.postUpdateFamily);
-app.get('/families/:id/family', passportConfig.isAuthenticated, familyController.getFamily);
-app.get('/families/:patientId/list', passportConfig.isAuthenticated, familyController.getFamilies);
+app.post('/api/families/create', passportConfig.isAuthenticated, familyController.postCreateFamily);
+app.put('/api/families/:id/update', passportConfig.isAuthenticated, familyController.postUpdateFamily);
+app.get('/api/families/:id/family', passportConfig.isAuthenticated, familyController.getFamily);
+app.get('/api/families/:patientId/list', passportConfig.isAuthenticated, familyController.getFamilies);
 
-app.post('/questions/create', passportConfig.isAuthenticated, questionController.postCreateQuestion);
-app.put('/questions/update', passportConfig.isAuthenticated, questionController.postUpdateQuestion);
-app.get('/questions/list', passportConfig.isAuthenticated, questionController.getQuestions);
+app.get('/api/specialists', passportConfig.isAuthenticated, userController.getSpecialists);
 
-app.post('/events/create', passportConfig.isAuthenticated, eventController.postCreateEvent);
-app.put('/events/:id/update', passportConfig.isAuthenticated, eventController.postUpdateEvent);
-app.get('/events/:id/event', passportConfig.isAuthenticated, eventController.getEvent);
-app.get('/events/list', passportConfig.isAuthenticated, eventController.getEvents);
-app.post('/events/attachments/:id', passportConfig.isAuthenticated, eventController.postCreateAttachmentEvent);
-app.get('/events/:id/attachments/:name/download', passportConfig.isAuthenticated, eventController.getAttachmentEvent);
-app.get('/events/:id/attachments', passportConfig.isAuthenticated, eventController.getAttachmentsEvent);
+app.post('/api/questions/create', passportConfig.isAuthenticated, questionController.postCreateQuestion);
+app.put('/api/questions/update', passportConfig.isAuthenticated, questionController.postUpdateQuestion);
+app.get('/api/questions/list', passportConfig.isAuthenticated, questionController.getQuestions);
+
+app.post('/api/events/create', passportConfig.isAuthenticated, eventController.postCreateEvent);
+app.put('/api/events/:id/update', passportConfig.isAuthenticated, eventController.postUpdateEvent);
+app.get('/api/events/:id/event', passportConfig.isAuthenticated, eventController.getEvent);
+app.get('/api/events/list', passportConfig.isAuthenticated, eventController.getEvents);
+app.post('/api/events/attachments/:eventId', passportConfig.isAuthenticated, eventController.postCreateAttachmentEvent);
+app.get('/api/events/attachments/:id/download', passportConfig.isAuthenticated, eventController.getAttachmentEvent);
+app.get('/api/events/:eventId/attachments', passportConfig.isAuthenticated, eventController.getAttachmentsEvent);
+app.delete('/api/events/:eventId/attachment/:attachmentId/delete', passportConfig.isAuthenticated, eventController.deleteAttachmentEvent);
 
 /**
  * API examples routes.

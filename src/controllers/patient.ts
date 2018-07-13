@@ -1,49 +1,44 @@
-import { default as User, UserModel } from '../models/User';
-import { PatientModel } from '../models/Patient';
 import { Request, Response, NextFunction } from 'express';
 import { ValidationError } from 'mongoose';
+import { default as Patient, PatientModel } from '../models/Patient';
+import logger from '../util/logger';
 
 /**
  * POST /patients/create
  * Create doctor's patient.
  */
 export let postCreatePatient = (req: Request, res: Response, next: NextFunction) => {
-    req.assert('firstName', 'First Name cannot be blank.').notEmpty();
-    req.assert('lastName', 'Las Name cannot be blank.').notEmpty();
+  req.assert('firstName', 'First Name cannot be blank.').notEmpty();
+  req.assert('lastName', 'Last Name cannot be blank.').notEmpty();
 
-    const errors = req.validationErrors();
+  const errors = <any[]>req.validationErrors();
 
-    if (errors) {
-        return res.status(400).send({ errors: errors });
+  if (errors) {
+    return res.status(400).send({ ok: true, message: errors[0].msg });
+  }
+
+  Patient.create({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    phone: req.body.phone,
+    mobile: req.body.mobile,
+    bodyPerson: {
+      height: req.body.bodyPerson.height,
+      weight: req.body.bodyPerson.weight,
+      color: req.body.bodyPerson.color
+    },
+    userId: req.user.id
+  }, (err: any, patient: any) => {
+    if (err) {
+      if (err.name == 'ValidationError') {
+        return res.status(400).send(<ValidationError>err.errors[Object.keys(err.errors)[0]].message);
+      }
+
+      return next(err);
     }
 
-    User.findById(req.user.id, (err, user: UserModel) => {
-        if (err) return next(err);
-
-        const patientModel: PatientModel = {
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            bodyPerson: {
-                height: req.body.bodyPerson.height,
-                weight: req.body.bodyPerson.weight,
-                color: req.body.bodyPerson.color
-            }
-        };
-
-        user.patients.push(patientModel);
-
-        user.save((err) => {
-            if (err) {
-                if (err.name == 'ValidationError') {
-                    return res.status(400).send({ error: <ValidationError>err.errors[Object.keys(err.errors)[0]].message });
-                }
-
-                return next(err);
-            }
-
-            res.status(200).send({  ok: true, msg: 'Patient information has been created.' });
-        });
-    });
+    res.status(200).send({ ok: true, model: patient, message: 'Patient information has been created.' });
+  });
 };
 
 /**
@@ -51,13 +46,13 @@ export let postCreatePatient = (req: Request, res: Response, next: NextFunction)
  * Get a simple patient of the list.
  */
 export let getPatient = (req: Request, res: Response, next: NextFunction) => {
-    User.findOne({ '_id': req.user.id, 'patients._id': req.params.id }, { 'patients.$': 1 }, (err, user: UserModel) => {
-       if (err) return next(err);
+  Patient.findOne({ '_id': req.params.id, 'userId': req.user.id }, (err: any, patient: PatientModel) => {
+    if (err) return next(err);
 
-       if (!user) return res.status(400).send({ error: 'User not found.' });
+    if (!patient) return res.status(400).send({ok: false, message: 'Patient not found.'});
 
-       return res.status(200).send(user.patients[0]);
-    });
+    return res.status(200).send(patient);
+  });
 };
 
 /**
@@ -65,25 +60,32 @@ export let getPatient = (req: Request, res: Response, next: NextFunction) => {
  * Update a simple patient of the list.
  */
 export let postUpdatePatient = (req: Request, res: Response, next: NextFunction) => {
-    User.findOneAndUpdate({ '_id': req.user.id, 'patients._id': req.body._id }, { '$set': { 'patients.$': req.body } }, (err: any, user: any) => {
-        if (err) return next(err);
+  Patient.findOneAndUpdate({
+    'userId': req.user.id,
+    '_id': req.body._id
+  }, { '$set': { '$': req.body } }, (err: any, patient: PatientModel) => {
+    if (err) return next(err);
 
-        const patient = user.patients.id(req.params.id);
+    patient.firstName = req.body.firstName;
+    patient.lastName = req.body.lastName;
+    patient.phone = req.body.phone;
+    patient.mobile = req.body.mobile;
+    patient.bodyPerson.height = req.body.bodyPerson.height;
+    patient.bodyPerson.weight = req.body.bodyPerson.weight;
+    patient.bodyPerson.color = req.body.bodyPerson.color;
 
-        patient.firstName = req.body.firstName;
+    patient.save((err: any) => {
+      if (err) {
+        if (err.name == 'ValidationError') {
+          return res.status(400).send({error: <ValidationError>err.errors[ Object.keys(err.errors)[ 0 ] ].message});
+        }
 
-        user.save((err: any) => {
-            if (err) {
-                if (err.name == 'ValidationError') {
-                    return res.status(400).send({ error: <ValidationError>err.errors[Object.keys(err.errors)[0]].message });
-                }
+        return next(err);
+      }
 
-                return next(err);
-            }
-
-            res.status(200).send({  ok: true, msg: 'Patient information has been updated.' });
-        });
+      res.status(200).send({ok: true, message: 'Patient information has been updated.'});
     });
+  });
 };
 
 /**
@@ -91,9 +93,36 @@ export let postUpdatePatient = (req: Request, res: Response, next: NextFunction)
  * Return a list of patients created.
  */
 export let getPatients = (req: Request, res: Response, next: NextFunction) => {
-    User.findOne({ '_id': req.user.id }, (err, user: UserModel) => {
-        if (err) return next(err);
+  let sortObj = {};
+  let filterObj = {};
 
-        return res.status(200).send(user.patients);
-    });
+  if (req.query.criteria)
+    filterObj = {
+      'userId': req.user.id,
+      $or: [
+        {'firstName': {$regex: new RegExp(req.query.criteria, 'gi')}},
+        {'lastName': {$regex: new RegExp(req.query.criteria, 'gi')}},
+        {'phone': {$regex: new RegExp(req.query.criteria, 'gi')}},
+        {'mobile': {$regex: new RegExp(req.query.criteria, 'gi')}}
+      ]
+    };
+  else
+    filterObj = {
+      'userId': req.user.id
+    };
+
+  if (req.query.orderby)
+    sortObj = {
+      [ req.query.orderby ]: req.query.sorttype || 'asc'
+    };
+
+  Patient.paginate(filterObj, {
+    offset: +req.query.skip,
+    limit: +req.query.take,
+    sort: sortObj
+  }, (err, patients) => {
+    if (err) logger.error(err);
+
+    return res.status(200).send(patients);
+  });
 };

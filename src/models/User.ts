@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt-nodejs';
 import crypto from 'crypto';
 import mongoose from 'mongoose';
-import { patientSchema, PatientModel } from './Patient';
 
 import { default as Specialist, QuestionModel, SpecialistModel } from '../models/Specialist';
 
@@ -24,12 +23,10 @@ export type UserModel = mongoose.Document & {
     gender: string,
     phone: string,
     mobile: string,
-    location: string,
+    address: string,
     website: string,
     picture: string
   },
-
-  patients: PatientModel[],
 
   active: boolean,
 
@@ -78,10 +75,9 @@ const userSchema = new mongoose.Schema({
     phone: String,
     mobile: String,
     website: String,
-    picture: String
+    picture: Buffer,
+    address: String
   },
-
-  patients: [ patientSchema ],
   events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
 
   active: Boolean

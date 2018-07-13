@@ -1,0 +1,85 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="form-container">
+          <form #form (submit)="onFormSubmit($event)">
+            <dx-form id="form"
+                     [showColonAfterLabel]="true"
+                     [showValidationSummary]="true"
+                     [formData]="patient"
+                     validationGroup="patientData">
+
+              <dxi-item itemType="tabbed" [tabPanelOptions]="{ deferRendering: false }">
+
+                <dxi-tab title="General Information" [colCount]="2">
+                  <dxi-item itemType="group" caption="Personal Data">
+                    <!--First Name-->
+                    <dxi-item dataField="firstName">
+                      <dxi-validation-rule
+                        type="required"
+                        message="First Name is required">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <!--Last Name-->
+                    <dxi-item dataField="lastName">
+                      <dxi-validation-rule
+                        type="required"
+                        message="Last Name is required">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <!--Residential Phone-->
+                    <dxi-item dataField="phone" [label]="{ text: 'Residential Phone' }" [editorOptions]="{ mask: '+1 (000) 000-0000'}">
+                      <dxi-validation-rule
+                        type="required"
+                        message="Residential Phone is required">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <!--Mobile Phone-->
+                    <dxi-item dataField="mobile" [label]="{ text: 'Mobile Phone' }" [editorOptions]="{ mask: '+1 (000) 000-0000'}">
+                      <dxi-validation-rule
+                        type="required"
+                        message="Mobile Phone is required">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                  </dxi-item>
+                  <dxi-item itemType="group" caption="Body Data" [colSpan]="1">
+                    <!--Height-->
+                    <dxi-item dataField="bodyPerson.height" editorType="dxNumberBox" [editorOptions]="{ format: '#0.## ft' }" [label]="{ text: 'Height' }">
+                    </dxi-item>
+                    <!--Weight-->
+                    <dxi-item dataField="bodyPerson.weight" editorType="dxNumberBox" [editorOptions]="{ format: '#0.## kg' }" [label]="{ text: 'Weight' }">
+                    </dxi-item>
+                    <!--Color-->
+                    <dxi-item dataField="bodyPerson.color" [label]="{text: 'Color'}"
+                              [editorOptions]="{ dataSource: colors, displayExpr: 'description', valueExpr: 'id' }"
+                              editorType="dxSelectBox">
+                    </dxi-item>
+                  </dxi-item>
+                </dxi-tab>
+
+              </dxi-item>
+
+            </dx-form>
+            <br>
+            <dx-button
+              text="Save"
+              icon="fas fa-save"
+              type="success"
+              validationGroup="patientData"
+              [useSubmitBehavior]="true">
+            </dx-button>
+
+            <dx-button
+              text="Back"
+              type="normal"
+              icon="fas fa-arrow-left"
+              routerLink="/patients"
+              [useSubmitBehavior]="false">
+            </dx-button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

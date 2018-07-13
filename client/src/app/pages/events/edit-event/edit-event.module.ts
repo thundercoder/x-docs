@@ -11,7 +11,7 @@ import {
   DxTemplateModule,
   DxFileUploaderModule,
   DxListModule,
-  DxMultiViewModule, DxDateBoxModule, DxNumberBoxModule
+  DxMultiViewModule, DxDateBoxModule, DxNumberBoxModule, DxDropDownBoxModule
 } from 'devextreme-angular';
 import { EditEventComponent } from './edit-event.component';
 
@@ -36,6 +36,8 @@ const routes: Routes = [{
     DxDateBoxModule,
     DxNumberBoxModule,
     DxTextAreaModule,
+    DxListModule,
+    DxDropDownBoxModule,
     RouterModule.forChild(routes)
   ],
   declarations: [ EditEventComponent ]

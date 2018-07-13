@@ -1,21 +1,24 @@
 import mongoose from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate';
 import { default as User, UserModel } from './User';
 import { QuestionModel } from './Specialist';
-import { attachmentSchema } from './Attachment';
+import Patient, { PatientModel } from './Patient';
 
 export const eventSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   cause: String,
+  patientFullName: String,
   resolution: String,
   backgroundQuestions: [],
-  attachments: [ attachmentSchema ],
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   patientId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Patient',
     index: true,
     validate: {
       isAsync: true,
       validator: (v: any, cb: (result: any, msg?: any) => {}) => {
-        User.findOne({'patients._id': v}, {'patients.$': 1}, (err, patient: UserModel) => {
+        Patient.findOne({'_id': v}, (err, patient: PatientModel) => {
           if (!patient)
             cb(false);
           else
@@ -24,15 +27,38 @@ export const eventSchema = new mongoose.Schema({
       },
       message: '{VALUE} is not a valid patient.'
     }
-  },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  }
 }, { timestamps: true });
+
+eventSchema.plugin(mongoosePaginate);
+
+/**
+ * Save patient full name middleware.
+ */
+eventSchema.pre('save', function save(next) {
+  const event = this;
+
+  if (!event.isModified('patientId')) {
+    return next();
+  }
+
+  Patient.findOne({ '_id': event.patientId, 'userId': event.userId }, (err: any, patient: PatientModel) => {
+    if (err) return next(err);
+
+    if (!patient)
+      return next('Patient not found.');
+
+    event.patientFullName = patient.firstName + ' ' + patient.lastName;
+
+    next();
+  });
+});
 
 export type EventModel = mongoose.Document & {
   cause: string,
   resolution: string,
+  patientFullName: string,
   backgroundQuestions: QuestionModel[],
-  attachments: any[],
   patientId: string,
   userId: string
 };

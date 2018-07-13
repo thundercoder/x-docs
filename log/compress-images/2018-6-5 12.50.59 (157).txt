@@ -1,0 +1,10 @@
+File from: [images-wrong/16252016_1304877602867713_1249149558420932757_o.jpg]
+
+File to: [images-good/16252016_1304877602867713_1249149558420932757_o.jpg]
+
+Compression algorithm: [mozjpeg]
+
+============== LOG ============== 
+Error: Command failed: C:\Projects\xeniall\x-docs\node_modules\mozjpeg\vendor\cjpeg.exe -quality 60 -outfile images-good/16252016_1304877602867713_1249149558420932757_o.jpg images-wrong/16252016_1304877602867713_1249149558420932757_o.jpg
+Empty input file
+================================= 

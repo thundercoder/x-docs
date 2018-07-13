@@ -1,0 +1,151 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="form-container">
+          <form *ngIf="(user && specialists)" #form (submit)="onFormSubmit($event)">
+            <dx-form id="form"
+                     [showColonAfterLabel]="true"
+                     [showValidationSummary]="true"
+                     [formData]="user"
+                     validationGroup="userData">
+
+              <dxi-item itemType="tabbed" [tabPanelOptions]="{ deferRendering: false }">
+                <!--Profile Information-->
+                <dxi-tab title="General Information" [colCount]="4">
+                  <!--Profile Info-->
+                  <dxi-item itemType="group" caption="Personal Data" [colSpan]="2">
+                    <!--Email-->
+                    <dxi-item dataField="email" [label]="{text: 'User / Email'}" editorType="dxTextBox">
+                      <dxi-validation-rule
+                        type="required"
+                        message="Email is required">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <!--First Name-->
+                    <dxi-item dataField="profile.firstName" [label]="{text: 'First Name'}" editorType="dxTextBox">
+                      <dxi-validation-rule
+                        type="required"
+                        message="First Name is required">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <!--Last Name-->
+                    <dxi-item dataField="profile.lastName" [label]="{text: 'Last Name'}" editorType="dxTextBox">
+                      <dxi-validation-rule
+                        type="required"
+                        message="Last Name is required">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <!--Specialist-->
+                    <dxi-item dataField="specialist" [label]="{text: 'Specialist'}"
+                              [editorOptions]="{ dataSource: specialists, displayExpr: 'description', valueExpr: 'code' }"
+                              editorType="dxSelectBox">
+                    </dxi-item>
+                    <!--Birth Date-->
+                    <dxi-item dataField="profile.birthDate" editorType="dxDateBox"></dxi-item>
+                    <!--Gender-->
+                    <dxi-item dataField="profile.gender" [label]="{text: 'Gender'}"
+                              [editorOptions]="{ dataSource: genders, displayExpr: 'description', valueExpr: 'id' }"
+                              editorType="dxSelectBox">
+                    </dxi-item>
+                    <!--Office Phone-->
+                    <dxi-item dataField="profile.phone" [label]="{text: 'Office Phone'}" [editorOptions]="{ mask: '+1 (000) 000-0000'}"></dxi-item>
+                    <!--Mobile Phone-->
+                    <dxi-item dataField="profile.mobile" [label]="{text: 'Mobile Phone'}" [editorOptions]="{ mask: '+1 (000) 000-0000'}"></dxi-item>
+                    <!--Website-->
+                    <dxi-item dataField="profile.website" [label]="{text: 'Website'}" editorType="dxTextBox">
+                    </dxi-item>
+                    <!--Address-->
+                    <dxi-item dataField="profile.address" [label]="{text: 'Address', height: '140px'}" editorType="dxTextArea">
+                    </dxi-item>
+
+                  </dxi-item>
+                  <!--Photo-->
+                  <dxi-item itemType="group" caption="Photo" [colSpan]="2">
+                    <dxi-item [colSpan]="1">
+                      <div class="form-avatar">
+                      </div>
+                    </dxi-item>
+                    <dxi-item [colSpan]="1">
+                      <dx-file-uploader
+                        #fileUploader
+                        uploadUrl="http://localhost:3000/api/account/upload/picture"
+                        [multiple]="true"
+                        accept="image/*"
+                        name="attachments"
+                        (onUploaded)="refresh()"
+                        uploadMode="instantly"
+                      ></dx-file-uploader>
+                    </dxi-item>
+                  </dxi-item>
+                </dxi-tab>
+                <!-- Background Questions -->
+                <dxi-tab title="Background Questions">
+                  <div *ngIf="user.questions.length > 0">
+                    <div class="list-container">
+                      <dx-list [items]="user.questions" height="100%" [allowItemDeleting]="true" [allowItemReordering]="true">
+                        <div *dxTemplate="let q of 'item'; let i = index">
+                          <div>
+                            <!--Question Literal-->
+                            <a (click)="updateQuestion(q, i)">{{ i + 1 }}. {{ q.question }}</a>
+                            <!--Question Type-->
+                            <p>{{ q.type }}</p>
+                          </div>
+                        </div>
+                      </dx-list>
+                    </div>
+                  </div>
+                  <dx-button
+                    style="float: right; margin-bottom: 10px"
+                    text="Create New"
+                    icon="fas fa-plus"
+                    type="normal"
+                    (onClick)="createNew()"
+                    [useSubmitBehavior]="false">
+                  </dx-button>
+                </dxi-tab>
+              </dxi-item>
+            </dx-form>
+
+            <br>
+            <dx-button
+              text="Save"
+              icon="fas fa-save"
+              type="success"
+              validationGroup="userData"
+              [useSubmitBehavior]="true">
+            </dx-button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<dx-popup
+  class="popup"
+  [showTitle]="true"
+  title="Question Managment"
+  [dragEnabled]="false"
+  [closeOnOutsideClick]="true"
+  [(visible)]="popupVisible">
+  <div *dxTemplate="let data of 'content'">
+    <p>
+      Question:
+    </p>
+    <dx-text-area [(ngModel)]="currentQuestion.question"></dx-text-area>
+    <br>
+    <p>
+      Type:
+    </p>
+    <dx-select-box [(ngModel)]="currentQuestion.type" [dataSource]="types" displayExpr="description" [value]="types[0].id" valueExpr="id"></dx-select-box>
+
+    <br>
+    <dx-button
+      text="Save"
+      icon="fas fa-save"
+      type="success"
+      (onClick)="saveQuestion()"
+      [useSubmitBehavior]="false">
+    </dx-button>
+  </div>
+</dx-popup>

@@ -12,7 +12,6 @@ declare var $: any;
   styleUrls: ['./create-event.component.css']
 })
 export class CreateEventComponent implements OnInit {
-
   @ViewChild('form') form: NgForm;
   event: Event;
   patients: Patient[];
@@ -36,5 +35,4 @@ export class CreateEventComponent implements OnInit {
 
     e.preventDefault();
   }
-
 }

@@ -6,6 +6,7 @@ import { environment } from 'environments/environment';
 import notify from 'devextreme/ui/notify';
 import { DxFileUploaderComponent, DxMultiViewComponent } from 'devextreme-angular';
 import { Patient } from '../../../models/patient';
+import CustomStore from 'devextreme/data/custom_store';
 
 @Component({
   selector: 'app-edit-event',
@@ -13,33 +14,27 @@ import { Patient } from '../../../models/patient';
   styleUrls: [ './edit-event.component.css' ]
 })
 export class EditEventComponent implements OnInit, OnDestroy {
-
   event: Event;
   private sub: any;
   mainUrl: string = environment.restApi;
   url: string = environment.restApi;
-  patients: Patient[];
   attachments: any[];
-  multiviewBehavior: any;
+  patients: any[];
+
   @ViewChild('fileUploader') fileUploader: DxFileUploaderComponent;
   @ViewChild('multiview') multiview: DxMultiViewComponent;
 
   constructor(private crud: CrudService, private route: ActivatedRoute) {
     this.event = new Event();
+    const itemsPerPage = environment.itemsPerPage;
 
     // Get patient's list from the Doctor
-    this.crud.listEntity('patients')
-      .then(res => this.patients = <Patient[]>res);
+    this.crud.listEntity('patients?skip=0&take=10')
+      .then(res => this.patients = res.docs);
   }
 
-  back(): void {
-    if (this.multiview.selectedItem != 0)
-      this.multiview.selectedIndex -= 1;
-  }
-
-  next(): void {
-    if (this.multiview.selectedItem != (this.multiview.items.length - 1))
-      this.multiview.selectedIndex += 1;
+  deleteImage(event): void {
+    this.crud.deleteEntity(`events/${this.event._id}/attachment/${event.itemData._id}/delete`);
   }
 
   ngOnInit() {

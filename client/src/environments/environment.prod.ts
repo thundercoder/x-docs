@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  restApi: 'http://localhost:3000',
+  itemsPerPage: 2
 };

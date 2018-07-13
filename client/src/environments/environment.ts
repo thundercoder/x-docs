@@ -5,5 +5,6 @@
 
 export const environment = {
   production: false,
-  restApi: 'http://localhost:3000'
+  restApi: 'http://localhost:3000/api',
+  itemsPerPage: 10
 };

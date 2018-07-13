@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LocationStrategy, PlatformLocation, Location } from '@angular/common';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-root',

@@ -1,0 +1,51 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <dx-data-grid id="gridContainer"
+                      [showColumnLines]="false"
+                      [showRowLines]="true"
+                      [remoteOperations]="true"
+                      [rowAlternationEnabled]="true"
+                      [dataSource]="dataSource">
+          <dxo-search-panel
+            [visible]="true"
+            [width]="240"
+            placeholder="Search...">
+          </dxo-search-panel>
+          <dxo-pager
+            [showInfo]="true"
+            infoText="Page {0} of {1} | ({2} items)"
+            [showNavigationButtons]="true">
+          </dxo-pager>
+
+          <dxi-column dataField="firstName" caption="First Name"></dxi-column>
+          <dxi-column dataField="lastName" caption="Last Name"></dxi-column>
+          <dxi-column dataField="phone" caption="Residential Phone"></dxi-column>
+          <dxi-column dataField="mobile" caption="Mobile Phone"></dxi-column>
+          <dxi-column caption="" cellTemplate="patientDetails"></dxi-column>
+
+          <div *dxTemplate="let d of 'patientDetails'">
+            <a routerLink="/patients/{{ d.data._id }}/detail"><i class="fas fa-info-circle"></i> Details</a>
+          </div>
+
+          <dxo-remote-operations
+            [sorting]="true"
+            [filtering]="true"
+            [paging]="true">
+          </dxo-remote-operations>
+          <dxo-paging [pageSize]="itemsPerPage"></dxo-paging>
+        </dx-data-grid>
+
+        <br>
+        <dx-button
+          text="Create New"
+          type="normal"
+          icon="fas fa-plus"
+          routerLink="/patients/create"
+          [useSubmitBehavior]="false">
+        </dx-button>
+      </div>
+    </div>
+  </div>
+</div>

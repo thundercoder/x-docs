@@ -18,7 +18,7 @@
                 <!-- General Information -->
                 <dxi-tab title="General Information">
                   <dxi-item dataField="patientId" editorType="dxSelectBox"
-                            [editorOptions]="{ items: patients, displayExpr: 'firstName', valueExpr: '_id', searchEnabled: true, itemTemplate: 'item' }"
+                            [editorOptions]="{ dataSource: patients, displayExpr: 'firstName', valueExpr: '_id', searchEnabled: true, itemTemplate: 'item' }"
                             [label]="{text: 'Patient'}">
                     <dxi-validation-rule
                       type="required"
@@ -48,13 +48,13 @@
                   ></dx-file-uploader>
 
                   <div *ngIf="attachments" class="list-container">
-                    <dx-list [items]="attachments" height="100%">
+                    <dx-list [items]="attachments" height="100%" [allowItemDeleting]="true" itemDeleteMode="static" (onItemDeleted)="deleteImage($event)">
                       <div *dxTemplate="let item of 'item'">
                         <div class="product">
-                          <img src="{{ mainUrl }}/events/{{ event._id }}/attachments/{{ item.name }}/download"/>
-                          <div>{{ item.name }}</div>
+                          <img src="{{ mainUrl }}/events/attachments/{{ item._id }}/download"/>
+                          <div class="name">{{ item.name }}</div>
                           <div class="price">
-                            <a download="custom-filename.jpg" href="{{ mainUrl }}/events/{{ event._id }}/attachments/{{ item.name }}/download" title="ImageName">
+                            <a download="custom-filename.jpg" href="{{ mainUrl }}/events/attachments/{{ item._id }}/download" title="Download">
                               <i class="fas fa-download"></i> Download
                             </a>
                           </div>
@@ -67,37 +67,39 @@
 
                 <!-- Background Questions -->
                 <dxi-tab title="Background Questions">
-                  <div *ngIf="event.backgroundQuestions.length > 0">
-                    <div id="multiview">
-                      <div>
-                        Question <span>{{ multiview.selectedIndex + 1 }}</span> of <span>{{ event.backgroundQuestions.length }}</span>
-                      </div>
-                      <dx-multi-view
-                        #multiview
-                        [height]="300"
-                        [dataSource]="event.backgroundQuestions"
-                        [selectedIndex]="0"
-                        [swipeEnabled]="false"
-                        [loop]="false"
-                        [animationEnabled]="true">
+                  <div *ngIf="event.backgroundQuestions">
+                    <div class="list-container">
+                      <dx-list [dataSource]="event.backgroundQuestions" height="100%"
+                               [searchExpr]="'question'"
+                               searchMode="contains"
+                               [searchEnabled]="true">
                         <div *dxTemplate="let q of 'item'; let i = index">
-                          <div class="multiview-item">
-                            <h5>{{ q.question }}</h5>
+                          <div>
                             <!--Question Type YES_NO-->
                             <div *ngIf="q.type == 'YES_NO'">
+                              <h5>{{ q.question }}</h5>
                               <dx-select-box [items]="['YES', 'NO']" [(ngModel)]="event.backgroundQuestions[i].answer"
-                                             [ngModelOptions]="{ standalone: true }">
+                                             [ngModelOptions]="{ standalone: true }" name="yesNoAnswer">
                               </dx-select-box>
+                              <div *ngIf="event.backgroundQuestions[i].answer == 'YES'">
+                                <span>Comentario</span>
+                                <dx-text-area name="commentAnswer">
+                                </dx-text-area>
+                              </div>
                             </div>
                             <!--Question Type DATE-->
                             <div *ngIf="q.type == 'DATE'">
+                              <h5>{{ q.question }}</h5>
                               <dx-date-box [(ngModel)]="event.backgroundQuestions[i].answer"
+                                           name="dateAnswer"
                                            [ngModelOptions]="{ standalone: true }" type="date">
                               </dx-date-box>
                             </div>
                             <!--Question Type NUMBER-->
                             <div *ngIf="q.type == 'NUMBER'">
+                              <h5>{{ q.question }}</h5>
                               <dx-number-box
+                                name="numberAnswer"
                                 [(ngModel)]="event.backgroundQuestions[i].answer"
                                 [ngModelOptions]="{ standalone: true }"
                                 [showSpinButtons]="true"
@@ -106,7 +108,9 @@
                             </div>
                             <!--Question Type OPEN-->
                             <div *ngIf="q.type == 'OPEN'">
+                              <h5>{{ q.question }}</h5>
                               <dx-text-area
+                                name="openAnswer"
                                 [(ngModel)]="event.backgroundQuestions[i].answer"
                                 [ngModelOptions]="{ standalone: true }"
                                 [height]="90">
@@ -114,16 +118,8 @@
                             </div>
                           </div>
                         </div>
-                      </dx-multi-view>
+                      </dx-list>
                     </div>
-                  </div>
-
-                  <br>
-                  <div>
-                    <dx-button text="Back" type="normal" icon="fas fa-arrow-circle-left"
-                               (onClick)="back()"></dx-button>
-                    <dx-button text="Next" type="normal" icon="fas fa-arrow-circle-right" style="float: right"
-                               (onClick)="next()"></dx-button>
                   </div>
                 </dxi-tab>
               </dxi-item>
@@ -132,9 +128,18 @@
             <br/>
             <dx-button
               text="Save"
+              icon="fas fa-save"
               type="success"
               validationGroup="eventData"
               [useSubmitBehavior]="true">
+            </dx-button>
+
+            <dx-button
+              text="Back"
+              type="normal"
+              icon="fas fa-arrow-left"
+              routerLink="/events"
+              [useSubmitBehavior]="false">
             </dx-button>
           </form>
         </div>

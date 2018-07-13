@@ -1,0 +1,11 @@
+File from: [images-wrong/lice.png]
+
+File to: [images-good/lice.png]
+
+Compression algorithm: [pngquant]
+
+============== LOG ============== 
+Error: Command failed: C:\Projects\xeniall\x-docs\node_modules\pngquant-bin\vendor\pngquant.exe --quality=20-50 -o images-good/lice.png images-wrong/lice.png
+  error: Not a PNG file
+  error: rwpng_read_image() error 25
+================================= 
