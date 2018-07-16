@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
-        <div id="form-container">
+        <div *ngIf="event" id="form-container">
           <form #form (submit)="onFormSubmit($event)">
             <dx-form id="form"
                      [showColonAfterLabel]="true"
@@ -67,55 +67,51 @@
 
                 <!-- Background Questions -->
                 <dxi-tab title="Background Questions">
-                  <div *ngIf="event.backgroundQuestions">
+                  <div>
                     <div class="list-container">
                       <dx-list [dataSource]="event.backgroundQuestions" height="100%"
                                [searchExpr]="'question'"
                                searchMode="contains"
                                [searchEnabled]="true">
                         <div *dxTemplate="let q of 'item'; let i = index">
-                          <div>
-                            <!--Question Type YES_NO-->
-                            <div *ngIf="q.type == 'YES_NO'">
-                              <h5>{{ q.question }}</h5>
-                              <dx-select-box [items]="['YES', 'NO']" [(ngModel)]="event.backgroundQuestions[i].answer"
-                                             [ngModelOptions]="{ standalone: true }" name="yesNoAnswer">
-                              </dx-select-box>
-                              <div *ngIf="event.backgroundQuestions[i].answer == 'YES'">
-                                <span>Comentario</span>
-                                <dx-text-area name="commentAnswer">
-                                </dx-text-area>
-                              </div>
-                            </div>
-                            <!--Question Type DATE-->
-                            <div *ngIf="q.type == 'DATE'">
-                              <h5>{{ q.question }}</h5>
-                              <dx-date-box [(ngModel)]="event.backgroundQuestions[i].answer"
-                                           name="dateAnswer"
-                                           [ngModelOptions]="{ standalone: true }" type="date">
-                              </dx-date-box>
-                            </div>
-                            <!--Question Type NUMBER-->
-                            <div *ngIf="q.type == 'NUMBER'">
-                              <h5>{{ q.question }}</h5>
-                              <dx-number-box
-                                name="numberAnswer"
-                                [(ngModel)]="event.backgroundQuestions[i].answer"
-                                [ngModelOptions]="{ standalone: true }"
-                                [showSpinButtons]="true"
-                                [showClearButton]="true"
-                              ></dx-number-box>
-                            </div>
-                            <!--Question Type OPEN-->
-                            <div *ngIf="q.type == 'OPEN'">
-                              <h5>{{ q.question }}</h5>
-                              <dx-text-area
-                                name="openAnswer"
-                                [(ngModel)]="event.backgroundQuestions[i].answer"
-                                [ngModelOptions]="{ standalone: true }"
-                                [height]="90">
+                          <h5>{{ q.question }}</h5>
+                          <!--Question Type YES_NO-->
+                          <div *ngIf="q.type == 'YES_NO'">
+                            <dx-select-box [items]="['YES', 'NO']" [(ngModel)]="q.answer"
+                                           [ngModelOptions]="{ standalone: true }"
+                                           name="yesNoAnswer">
+                            </dx-select-box>
+                            <div *ngIf="q.answer == 'YES'">
+                              <span>Comentario</span>
+                              <dx-text-area name="commentAnswer">
                               </dx-text-area>
                             </div>
+                          </div>
+                          <!--Question Type YES_NO-->
+                          <div *ngIf="q.type == 'DATE'">
+                            <dx-date-box [(ngModel)]="q.answer"
+                                         [ngModelOptions]="{ standalone: true }" type="date"
+                                         name="dateAnswer">
+                            </dx-date-box>
+                          </div>
+                          <!--Question Type NUMBER-->
+                          <div *ngIf="q.type == 'NUMBER'">
+                            <dx-number-box
+                              name="numberAnswer"
+                              [(ngModel)]="q.answer"
+                              [ngModelOptions]="{ standalone: true }"
+                              [showSpinButtons]="true"
+                              [showClearButton]="true"
+                            ></dx-number-box>
+                          </div>
+                          <!--Question Type OPEN-->
+                          <div *ngIf="q.type == 'OPEN'">
+                            <dx-text-area
+                              name="openAnswer"
+                              [(ngModel)]="q.answer"
+                              [ngModelOptions]="{ standalone: true }"
+                              [height]="90">
+                            </dx-text-area>
                           </div>
                         </div>
                       </dx-list>

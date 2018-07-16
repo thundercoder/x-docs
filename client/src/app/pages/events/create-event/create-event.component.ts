@@ -20,8 +20,8 @@ export class CreateEventComponent implements OnInit {
     this.event = new Event();
 
     // Get patient's list from the Doctor
-    this.crud.listEntity('patients')
-      .then(res => this.patients = <Patient[]>res);
+    this.crud.listEntity('patients?skip=0&take=10')
+      .then(res => this.patients = res.docs);
   }
 
   ngOnInit() { }
