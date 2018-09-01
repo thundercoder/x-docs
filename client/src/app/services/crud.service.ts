@@ -21,7 +21,7 @@ export class CrudService {
       .toPromise()
       .then(res => console.log('fulfill'));
 
-    return this.http.get(`${this.apiDocs}/${endpoint}`, { headers: this.apiHeaders, withCredentials: true })
+    return this.http.get(`${this.apiDocs}/${endpoint}`, {headers: this.apiHeaders, withCredentials: true})
       .toPromise()
       .then(res => {
         return res;
@@ -34,7 +34,7 @@ export class CrudService {
       .toPromise()
       .then(res => console.log('fulfill'));
 
-    return this.http.get(`${this.apiDocs}/${endpoint}/${id}/${endpoint.substr(0, endpoint.length - 1)}`, { headers: this.apiHeaders, withCredentials: true })
+    return this.http.get(`${this.apiDocs}/${endpoint}/${id}/${endpoint.substr(0, endpoint.length - 1)}`, {headers: this.apiHeaders, withCredentials: true})
       .toPromise()
       .then(res => {
         return res;
@@ -47,7 +47,7 @@ export class CrudService {
       .toPromise()
       .then(res => console.log('fulfill'));
 
-    return this.http.post(`${this.apiDocs}/${endpoint}`, entity, { headers: this.apiHeaders, withCredentials: true })
+    return this.http.post(`${this.apiDocs}/${endpoint}`, entity, {headers: this.apiHeaders, withCredentials: true})
       .toPromise()
       .then(res => {
         return res;
@@ -60,7 +60,7 @@ export class CrudService {
       .toPromise()
       .then(res => console.log('fulfill'));
 
-    return this.http.put(`${this.apiDocs}/${endpoint}`, entity, { headers: this.apiHeaders, withCredentials: true })
+    return this.http.put(`${this.apiDocs}/${endpoint}`, entity, {headers: this.apiHeaders, withCredentials: true})
       .toPromise()
       .then(res => {
         return res;
@@ -69,11 +69,11 @@ export class CrudService {
   }
 
   listEntity(endpoint: string): Promise<any> {
-    this.http.post(`${this.apiDocs}/login`, {email: 'hectorglara@outlook.com', password: 'abc*123'}, { headers: this.apiHeaders })
+    this.http.post(`${this.apiDocs}/login`, {email: 'hectorglara@outlook.com', password: 'abc*123'}, {headers: this.apiHeaders})
       .toPromise()
       .then(res => console.log('fulfill'));
 
-    return this.http.get(`${this.apiDocs}/${endpoint}`, { headers: this.apiHeaders, withCredentials: true })
+    return this.http.get(`${this.apiDocs}/${endpoint}`, {headers: this.apiHeaders, withCredentials: true})
       .toPromise()
       .then(res => {
         return res;
@@ -86,7 +86,7 @@ export class CrudService {
       .toPromise()
       .then(res => console.log('fulfill'));
 
-    return this.http.delete(`${this.apiDocs}/${endpoint}`, { headers: this.apiHeaders, withCredentials: true })
+    return this.http.delete(`${this.apiDocs}/${endpoint}`, {headers: this.apiHeaders, withCredentials: true})
       .toPromise()
       .then(res => {
         return res;

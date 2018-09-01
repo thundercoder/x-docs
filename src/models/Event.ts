@@ -5,12 +5,12 @@ import { QuestionModel } from './Specialist';
 import Patient, { PatientModel } from './Patient';
 
 export const eventSchema = new mongoose.Schema({
-  date: { type: Date, default: Date.now },
+  date: {type: Date, default: Date.now},
   cause: String,
   patientFullName: String,
   resolution: String,
   backgroundQuestions: [],
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   patientId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Patient',
@@ -28,7 +28,7 @@ export const eventSchema = new mongoose.Schema({
       message: '{VALUE} is not a valid patient.'
     }
   }
-}, { timestamps: true });
+}, {timestamps: true});
 
 eventSchema.plugin(mongoosePaginate);
 
@@ -42,7 +42,7 @@ eventSchema.pre('save', function save(next) {
     return next();
   }
 
-  Patient.findOne({ '_id': event.patientId, 'userId': event.userId }, (err: any, patient: PatientModel) => {
+  Patient.findOne({'_id': event.patientId, 'userId': event.userId}, (err: any, patient: PatientModel) => {
     if (err) return next(err);
 
     if (!patient)
